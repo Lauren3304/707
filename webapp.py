@@ -479,71 +479,8 @@ def render_page(title, content):
         .loading { text-align: center; padding: 30px; display: none; }
         .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* ESTILOS DEL MENÚ ARCOÍRIS */
-        .user-info { 
-            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff); 
-            background-size: 400% 400%;
-            animation: rainbow-gradient 3s ease infinite;
-            padding: 15px; 
-            border-radius: 10px; 
-            margin-bottom: 20px; 
-            text-align: center; 
-            font-size: 14px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        @keyframes rainbow-gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .user-info span {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-weight: 700;
-            font-size: 16px;
-        }
-        
-        .user-info a { 
-            color: white; 
-            text-decoration: none; 
-            font-weight: 700;
-            background: rgba(0,0,0,0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 2px solid rgba(255,255,255,0.4);
-            transition: all 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-        
-        .user-info a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        
-        .user-info a.logout-btn {
-            background: rgba(220,53,69,0.8);
-        }
-        
-        .user-info a.logout-btn:hover {
-            background: rgba(220,53,69,1);
-        }
-        
-        .user-info a.home-btn {
-            background: rgba(40,167,69,0.8);
-        }
-        
-        .user-info a.home-btn:hover {
-            background: rgba(40,167,69,1);
-        }
-        
+        .user-info { background: #e3f2fd; padding: 12px; border-radius: 6px; margin-bottom: 15px; text-align: center; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+        .user-info a { color: #1976d2; text-decoration: none; font-weight: 600; }
         .flash { padding: 12px; margin-bottom: 8px; border-radius: 6px; font-size: 14px; }
         .flash.success { background-color: #d4edda; color: #155724; }
         .flash.danger { background-color: #f8d7da; color: #721c24; }
@@ -675,10 +612,10 @@ def search_page():
     content = '''
     <div class="container">
         <div class="user-info">
-            <span>🌈 ''' + user_name_escaped + ''' 🌈</span>
+            <span><strong>''' + user_name_escaped + '''</strong></span>
             <div style="display: inline-block; margin-left: 15px;">
-                <a href="''' + url_for('auth_logout') + '''" class="logout-btn">✨ Salir</a>
-                <a href="''' + url_for('index') + '''" class="home-btn" style="margin-left: 8px;">🏠 Inicio</a>
+                <a href="''' + url_for('auth_logout') + '''" style="background: #dc3545; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
+                <a href="''' + url_for('index') + '''" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Inicio</a>
             </div>
         </div>
         
@@ -932,25 +869,21 @@ def results_page():
             min_price = min(prices)
             avg_price = sum(prices) / len(prices)
             search_type_text = {"texto": "texto", "imagen": "imagen IA", "texto+imagen": "texto + imagen IA", "combined": "búsqueda mixta"}.get(search_type, search_type)
-            min_price_formatted = f'{min_price:.2f}'
-            avg_price_formatted = f'{avg_price:.2f}'
-            products_count = str(len(products))
-            
-            stats = f'''
+            stats = '''
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
-                    <p><strong>{products_count} productos encontrados</strong></p>
-                    <p><strong>Mejor precio: ${min_price_formatted}</strong></p>
-                    <p><strong>Precio promedio: ${avg_price_formatted}</strong></p>
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda (''' + search_type_text + ''')</h3>
+                    <p><strong>''' + str(len(products)) + ''' productos encontrados</strong></p>
+                    <p><strong>Mejor precio: $''' + f'{min_price:.2f}' + '''</strong></p>
+                    <p><strong>Precio promedio: $''' + f'{avg_price:.2f}' + '''</strong></p>
                 </div>'''
         
         content = '''
         <div style="max-width: 800px; margin: 0 auto;">
-            <div class="user-info" style="background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff); background-size: 400% 400%; animation: rainbow-gradient 3s ease infinite;">
-                <span style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 700;">🌈 ''' + user_name_escaped + ''' 🌈</span>
+            <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                <span style="color: white; font-size: 14px;"><strong>''' + user_name_escaped + '''</strong></span>
                 <div style="margin-left: 15px;">
-                    <a href="''' + url_for('auth_logout') + '''" class="logout-btn" style="margin-right: 8px;">✨ Salir</a>
-                    <a href="''' + url_for('search_page') + '''" class="home-btn">🔍 Nueva Busqueda</a>
+                    <a href="''' + url_for('auth_logout') + '''" style="background: rgba(220,53,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
+                    <a href="''' + url_for('search_page') + '''" style="background: rgba(40,167,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Nueva Busqueda</a>
                 </div>
             </div>
             
@@ -959,15 +892,7 @@ def results_page():
             
             ''' + stats + '''
             ''' + products_html + '''
-        </div>
-        
-        <style>
-            @keyframes rainbow-gradient {
-                0% { background-position: 0% 50%; }
-                50% { background-position: 100% 50%; }
-                100% { background-position: 0% 50%; }
-            }
-        </style>'''
+        </div>'''
         
         return render_template_string(render_page('Resultados - Price Finder USA', content))
     except Exception as e:
