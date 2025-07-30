@@ -1,3 +1,6 @@
+# ========================================
+# MÓDULO: IMPORTS Y CONFIGURACIÓN INICIAL
+# ========================================
 # webapp.py - Price Finder USA con Búsqueda por Imagen
 from flask import Flask, request, jsonify, session, redirect, url_for, render_template_string, flash
 import requests
@@ -29,14 +32,26 @@ except ImportError:
     google_exceptions = None
     GEMINI_AVAILABLE = False
     print("⚠️ Google Generative AI no disponible - instalar con: pip install google-generativeai")
+# ========================================
+# FIN MÓDULO: IMPORTS Y CONFIGURACIÓN INICIAL
+# ========================================
 
+# ========================================
+# MÓDULO: CONFIGURACIÓN DE FLASK APP
+# ========================================
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'fallback-key-change-in-production')
 app.config['PERMANENT_SESSION_LIFETIME'] = 1800
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = True if os.environ.get('RENDER') else False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
+# ========================================
+# FIN MÓDULO: CONFIGURACIÓN DE FLASK APP
+# ========================================
 
+# ========================================
+# MÓDULO: CONFIGURACIÓN DE GEMINI AI
+# ========================================
 # Configuración de Gemini
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_AVAILABLE and GEMINI_API_KEY:
@@ -53,7 +68,13 @@ elif GEMINI_AVAILABLE and not GEMINI_API_KEY:
 else:
     print("⚠️ Gemini no está disponible - búsqueda por imagen deshabilitada")
     GEMINI_READY = False
+# ========================================
+# FIN MÓDULO: CONFIGURACIÓN DE GEMINI AI
+# ========================================
 
+# ========================================
+# MÓDULO: CLASE FIREBASE AUTH
+# ========================================
 # Firebase Auth Class
 class FirebaseAuth:
     def __init__(self):
@@ -148,7 +169,13 @@ def login_required(f):
             return redirect(url_for('auth_login_page'))
         return f(*args, **kwargs)
     return decorated_function
+# ========================================
+# FIN MÓDULO: CLASE FIREBASE AUTH
+# ========================================
 
+# ========================================
+# MÓDULO: FUNCIONES DE BÚSQUEDA POR IMAGEN
+# ========================================
 # ==============================================================================
 # FUNCIONES DE BÚSQUEDA POR IMAGEN
 # ==============================================================================
@@ -215,7 +242,13 @@ def validate_image(image_content):
         return True
     except:
         return False
+# ========================================
+# FIN MÓDULO: FUNCIONES DE BÚSQUEDA POR IMAGEN
+# ========================================
 
+# ========================================
+# MÓDULO: CLASE PRICE FINDER
+# ========================================
 # Price Finder Class - MODIFICADO para búsqueda por imagen
 class PriceFinder:
     def __init__(self):
@@ -452,7 +485,13 @@ class PriceFinder:
 
 # Instancia global de PriceFinder
 price_finder = PriceFinder()
+# ========================================
+# FIN MÓDULO: CLASE PRICE FINDER
+# ========================================
 
+# ========================================
+# MÓDULO: TEMPLATES HTML
+# ========================================
 # Templates
 def render_page(title, content):
     template = '''<!DOCTYPE html>
@@ -559,7 +598,13 @@ AUTH_LOGIN_TEMPLATE = """
 </body>
 </html>
 """
+# ========================================
+# FIN MÓDULO: TEMPLATES HTML
+# ========================================
 
+# ========================================
+# MÓDULO: RUTAS DE AUTENTICACIÓN
+# ========================================
 # Routes
 @app.route('/auth/login-page')
 def auth_login_page():
@@ -592,7 +637,13 @@ def auth_logout():
     firebase_auth.clear_user_session()
     flash('Has cerrado la sesion correctamente.', 'success')
     return redirect(url_for('auth_login_page'))
+# ========================================
+# FIN MÓDULO: RUTAS DE AUTENTICACIÓN
+# ========================================
 
+# ========================================
+# MÓDULO: RUTAS PRINCIPALES
+# ========================================
 @app.route('/')
 def index():
     if not firebase_auth.is_user_logged_in():
@@ -753,7 +804,13 @@ def search_page():
     </script>'''
     
     return render_template_string(render_page('Busqueda', content))
+# ========================================
+# FIN MÓDULO: RUTAS PRINCIPALES
+# ========================================
 
+# ========================================
+# MÓDULO: API ENDPOINTS
+# ========================================
 @app.route('/api/search', methods=['POST'])
 @login_required
 def api_search():
@@ -873,8 +930,10 @@ def results_page():
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                     <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda (''' + search_type_text + ''')</h3>
                     <p><strong>''' + str(len(products)) + ''' productos encontrados</strong></p>
-                    <p><strong>Mejor precio: $''' + f'{min_price:.2f}' + '''</strong></p>
-                    <p><strong>Precio promedio: $''' + f'{avg_price:.2f}' + '''</strong></p>
+                    <p><strong>Mejor precio: 
+    '' + f'{min_price:.2f}' + '''</strong></p>
+                    <p><strong>Precio promedio: 
+    '' + f'{avg_price:.2f}' + '''</strong></p>
                 </div>'''
         
         content = '''
@@ -913,7 +972,13 @@ def health_check():
         })
     except Exception as e:
         return jsonify({'status': 'ERROR', 'message': str(e)}), 500
+# ========================================
+# FIN MÓDULO: API ENDPOINTS
+# ========================================
 
+# ========================================
+# MÓDULO: MIDDLEWARE Y CONFIGURACIÓN DE SEGURIDAD
+# ========================================
 # Middleware
 @app.before_request
 def before_request():
@@ -936,7 +1001,13 @@ def after_request(response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     return response
+# ========================================
+# FIN MÓDULO: MIDDLEWARE Y CONFIGURACIÓN DE SEGURIDAD
+# ========================================
 
+# ========================================
+# MÓDULO: MANEJADORES DE ERRORES
+# ========================================
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
@@ -945,7 +1016,13 @@ def not_found(error):
 @app.errorhandler(500)
 def internal_error(error):
     return '<h1>500 - Error interno</h1><p><a href="/">Volver al inicio</a></p>', 500
+# ========================================
+# FIN MÓDULO: MANEJADORES DE ERRORES
+# ========================================
 
+# ========================================
+# MÓDULO: CONFIGURACIÓN DE INICIO Y LOGGING
+# ========================================
 if __name__ == '__main__':
     print("Price Finder USA con Búsqueda por Imagen - Starting...")
     print(f"Firebase: {'OK' if os.environ.get('FIREBASE_WEB_API_KEY') else 'NOT_CONFIGURED'}")
@@ -958,3 +1035,6 @@ else:
     import logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
     logging.getLogger('werkzeug').setLevel(logging.WARNING)
+# ========================================
+# FIN MÓDULO: CONFIGURACIÓN DE INICIO Y LOGGING
+# ========================================
