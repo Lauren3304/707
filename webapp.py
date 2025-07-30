@@ -932,12 +932,16 @@ def results_page():
             min_price = min(prices)
             avg_price = sum(prices) / len(prices)
             search_type_text = {"texto": "texto", "imagen": "imagen IA", "texto+imagen": "texto + imagen IA", "combined": "búsqueda mixta"}.get(search_type, search_type)
-            stats = '''
+            min_price_formatted = f'{min_price:.2f}'
+            avg_price_formatted = f'{avg_price:.2f}'
+            products_count = str(len(products))
+            
+            stats = f'''
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda (''' + search_type_text + ''')</h3>
-                    <p><strong>''' + str(len(products)) + ''' productos encontrados</strong></p>
-                    <p><strong>Mejor precio: '' + f'{min_price:.2f}' + '''</strong></p>
-                    <p><strong>Precio promedio: '' + f'{avg_price:.2f}' + '''</strong></p>
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
+                    <p><strong>{products_count} productos encontrados</strong></p>
+                    <p><strong>Mejor precio: ${min_price_formatted}</strong></p>
+                    <p><strong>Precio promedio: ${avg_price_formatted}</strong></p>
                 </div>'''
         
         content = '''
