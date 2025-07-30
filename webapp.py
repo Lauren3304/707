@@ -1,1128 +1,4 @@
-.user-info a.logout-btn:hover {
-            background: rgba(244, 67, 54, 1);
-        }
-        
-        .user-info a.home-btn {
-            background: rgba(76, 175, 80, 0.8);
-        }
-        
-        .user-info a.home-btn:hover {
-            background: rgba(76, 175, 80, 1);
-        }
-        
-        /* CAJAS DE INFORMACIÓN DINÁMICAS */
-        .tips {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
-            border: 2px solid var(--success-color);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            position: relative;
-            overflow: hidden;
-            animation: fade-in 1s ease-out 0.9s both;
-        }
-        
-        .tips::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
-            animation: slide-shine 3s ease-in-out infinite;
-        }
-        
-        @keyframes slide-shine {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-        
-        .tips h4 {
-            color: var(--success-color);
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .tips ul {
-            margin: 8px 0 0 20px;
-            font-size: 13px;
-        }
-        
-        .tips li {
-            margin-bottom: 5px;
-            transition: transform 0.2s ease;
-        }
-        
-        .tips li:hover {
-            transform: translateX(5px);
-        }
-        
-        /* MENSAJES FLASH DINÁMICOS */
-        .flash {
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            border-left: 4px solid;
-            animation: flash-appear 0.5s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        @keyframes flash-appear {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .flash.success {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
-            color: #2E7D32;
-            border-left-color: var(--success-color);
-        }
-        
-        .flash.danger {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
-            color: #C62828;
-            border-left-color: var(--danger-color);
-        }
-        
-        .flash.warning {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
-            color: #E65100;
-            border-left-color: var(--warning-color);
-        }
-        
-        /* ÁREA DE CARGA DE IMÁGENES DINÁMICA */
-        .image-upload {
-            background: linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(80, 227, 194, 0.05));
-            border: 3px dashed #dee2e6;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            margin: 20px 0;
-            transition: all 0.3s ease;
-            position: relative;
-            animation: fade-in 1s ease-out 1.2s both;
-        }
-        
-        .image-upload input[type="file"] {
-            display: none;
-        }
-        
-        .image-upload label {
-            cursor: pointer;
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .image-upload:hover {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(80, 227, 194, 0.1));
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.15);
-        }
-        
-        .image-upload:hover label {
-            transform: scale(1.05);
-        }
-        
-        .image-preview {
-            max-width: 150px;
-            max-height: 150px;
-            margin: 15px auto;
-            border-radius: 12px;
-            display: none;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-        }
-        
-        .image-preview:hover {
-            transform: scale(1.05);
-        }
-        
-        /* DIVISOR DINÁMICO */
-        .or-divider {
-            text-align: center;
-            margin: 25px 0;
-            color: #666;
-            font-weight: 600;
-            position: relative;
-            animation: fade-in 1s ease-out 1.5s both;
-        }
-        
-        .or-divider:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #dee2e6, transparent);
-            z-index: 1;
-        }
-        
-        .or-divider span {
-            background: white;
-            padding: 0 20px;
-            position: relative;
-            z-index: 2;
-            font-size: 14px;
-        }
-        
-        /* ÁREA DE CARGA DINÁMICA */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            display: none;
-            animation: fade-in 0.5s ease-out;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(74, 144, 226, 0.1);
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.7); }
-            50% { box-shadow: 0 0 0 10px rgba(74, 144, 226, 0); }
-        }
-        
-        .loading h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            animation: text-glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes text-glow {
-            from { text-shadow: 0 0 5px rgba(74, 144, 226, 0.5); }
-            to { text-shadow: 0 0 20px rgba(74, 144, 226, 0.8); }
-        }
-        
-        /* MENSAJES DE ERROR DINÁMICOS */
-        .error {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
-            color: var(--danger-color);
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            display: none;
-            border-left: 4px solid var(--danger-color);
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        
-        /* EFECTOS RESPONSIVOS */
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                padding: 20px;
-                border-radius: 15px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .search-bar {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .search-bar button {
-                width: 100%;
-            }
-            
-            .user-info {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .user-info > div {
-                margin-left: 0 !important;
-            }
-        }
-    </style>
-</head>
-<body>''' + content + '''</body>
-</html>'''
-    return template
-
-AUTH_LOGIN_TEMPLATE = """
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesion | Price Finder USA</title>
-    <style>
-        :root {
-            --primary-color: #4A90E2;
-            --secondary-color: #50E3C2;
-            --dark-color: #2C3E50;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* PARTÍCULAS ANIMADAS DE FONDO */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            animation: float-bg 15s ease-in-out infinite;
-        }
-        
-        @keyframes float-bg {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(180deg); }
-        }
-        
-        .auth-container {
-            max-width: 420px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-            animation: slide-in 0.8s ease-out;
-        }
-        
-        @keyframes slide-in {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .form-header {
-            text-align: center;
-            padding: 40px 25px 20px;
-            background: linear-gradient(45deg, var(--dark-color), var(--primary-color));
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .form-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: rotate 10s linear infinite;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .form-header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-            position: relative;
-            z-index: 2;
-            animation: glow-text 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow-text {
-            from { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-            to { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8); }
-        }
-        
-        .form-header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .form-body {
-            padding: 30px;
-        }
-        
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .input-group label {
-            font-weight: 600;
-            color: var(--dark-color);
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-        
-        .input-group input {
-            padding: 16px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-        }
-        
-        .input-group input:focus {
-            outline: 0;
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.15);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(45deg, var(--primary-color), #2980b9);
-            color: white;
-            border: none;
-            padding: 16px 25px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .submit-btn:hover::before {
-            left: 100%;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(74, 144, 226, 0.4);
-        }
-        
-        .flash-messages {
-            list-style: none;
-            padding: 0 25px 15px;
-        }
-        
-        .flash {
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 14px;
-            border-left: 4px solid;
-            animation: flash-slide 0.5s ease-out;
-        }
-        
-        @keyframes flash-slide {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .flash.success {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
-            color: #2E7D32;
-            border-left-color: #4CAF50;
-        }
-        
-        .flash.danger {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
-            color: #C62828;
-            border-left-color: #F44336;
-        }
-        
-        .flash.warning {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
-            color: #E65100;
-            border-left-color: #FF9800;
-        }
-        
-        @media (max-width: 480px) {
-            .auth-container {
-                margin: 10px;
-            }
-            
-            .form-header {
-                padding: 30px 20px 15px;
-            }
-            
-            .form-body {
-                padding: 25px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="auth-container">
-        <div class="form-header">
-            <h1>🌈 Price Finder USA</h1>
-            <p>✨ Iniciar Sesión Dinámico ✨</p>
-        </div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flash-messages">
-                    {% for category, message in messages %}
-                        <li class="flash {{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-        <div class="form-body">
-            <form action="{{ url_for('auth_login') }}" method="post">
-                <div class="input-group">
-                    <label for="email">📧 Correo Electrónico</label>
-                    <input type="email" name="email" id="email" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">🔒 Contraseña</label>
-                    <input type="password" name="password" id="password" required>
-                </div>
-                <button type="submit" class="submit-btn">🚀 Entrar al Sistema</button>
-            </form>
-        </div>
-    </div>
-</body>
-</html>
-"""
-
-# Routes
-@app.route('/auth/login-page')
-def auth_login_page():
-    return render_template_string(AUTH_LOGIN_TEMPLATE)
-
-@app.route('/auth/login', methods=['POST'])
-def auth_login():
-    email = request.form.get('email', '').strip()
-    password = request.form.get('password', '').strip()
-    
-    if not email or not password:
-        flash('Por favor completa todos los campos.', 'danger')
-        return redirect(url_for('auth_login_page'))
-    
-    print(f"Login attempt for {email}")
-    result = firebase_auth.login_user(email, password)
-    
-    if result['success']:
-        firebase_auth.set_user_session(result['user_data'])
-        flash(result['message'], 'success')
-        print(f"Successful login for {email}")
-        return redirect(url_for('index'))
-    else:
-        flash(result['message'], 'danger')
-        print(f"Failed login for {email}")
-        return redirect(url_for('auth_login_page'))
-
-@app.route('/auth/logout')
-def auth_logout():
-    firebase_auth.clear_user_session()
-    flash('Has cerrado la sesion correctamente.', 'success')
-    return redirect(url_for('auth_login_page'))
-
-@app.route('/')
-def index():
-    if not firebase_auth.is_user_logged_in():
-        return redirect(url_for('auth_login_page'))
-    return redirect(url_for('search_page'))
-
-@app.route('/search')
-@login_required
-def search_page():
-    current_user = firebase_auth.get_current_user()
-    user_name = current_user['user_name'] if current_user else 'Usuario'
-    user_name_escaped = html.escape(user_name)
-    
-    # Verificar si búsqueda por imagen está disponible
-    image_search_available = GEMINI_READY and PIL_AVAILABLE
-    
-    content = '''
-    <div class="container">
-        <div class="user-info">
-            <span>🌈 ''' + user_name_escaped + ''' 🌈</span>
-            <div style="display: inline-block; margin-left: 15px;">
-                <a href="''' + url_for('auth_logout') + '''" class="logout-btn">✨ Salir</a>
-                <a href="''' + url_for('index') + '''" class="home-btn" style="margin-left: 8px;">🏠 Inicio</a>
-            </div>
-        </div>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <h1>🔍 Buscar Productos</h1>
-        <p class="subtitle">''' + ('🖼️ Búsqueda por texto o imagen IA' if image_search_available else '📝 Búsqueda por texto') + ''' - Resultados ultrarrápidos ⚡</p>
-        
-        <form id="searchForm" enctype="multipart/form-data">
-            <div class="search-bar">
-                <input type="text" id="searchQuery" name="query" placeholder="🛍️ Busca cualquier producto...">
-                <button type="submit">🚀 Buscar</button>
-            </div>
-            
-            ''' + ('<div class="or-divider"><span>✨ O sube una imagen ✨</span></div>' if image_search_available else '') + '''
-            
-            ''' + ('<div class="image-upload" id="imageUpload"><input type="file" id="imageFile" name="image_file" accept="image/*"><label for="imageFile">📷 Buscar por imagen IA<br><small>🎯 JPG, PNG, GIF hasta 10MB</small></label><img id="imagePreview" class="image-preview" src="#" alt="Vista previa"></div>' if image_search_available else '') + '''
-        </form>
-        
-        <div class="tips">
-            <h4>🎯 Sistema Optimizado''' + (' + 🤖 IA Visual:' if image_search_available else ':') + '''</h4>
-            <ul style="margin: 8px 0 0 20px; font-size: 13px;">
-                <li><strong>⚡ Velocidad:</strong> Resultados en menos de 15 segundos</li>
-                <li><strong>🇺🇸 USA:</strong> Amazon, Walmart, Target, Best Buy</li>
-                <li><strong>🚫 Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
-                ''' + ('<li><strong>🖼️ IA:</strong> Identifica productos en imágenes automáticamente</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar IA</li>') + '''
-            </ul>
-        </div>
-        
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <h3>🔍 Buscando productos...</h3>
-            <p id="loadingText">⏱️ Máximo 15 segundos</p>
-        </div>
-        <div id="error" class="error"></div>
-    </div>
-    
-    <script>
-        let searching = false;
-        const imageSearchAvailable = ''' + str(image_search_available).lower() + ''';
-        
-        // Efectos dinámicos al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('.container > *');
-            elements.forEach((el, index) => {
-                el.style.animationDelay = (index * 0.1) + 's';
-            });
-        });
-        
-        // Manejo de vista previa de imagen con efectos
-        if (imageSearchAvailable) {
-            document.getElementById('imageFile').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                const preview = document.getElementById('imagePreview');
-                const uploadArea = document.getElementById('imageUpload');
-                
-                if (file) {
-                    if (file.size > 10 * 1024 * 1024) {
-                        showError('🚨 La imagen es demasiado grande (máximo 10MB)');
-                        this.value = '';
-                        return;
-                    }
-                    
-                    uploadArea.style.borderColor = '#4CAF50';
-                    uploadArea.style.background = 'linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05))';
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
-                        preview.style.animation = 'slide-up 0.5s ease-out';
-                        document.getElementById('searchQuery').value = '';
-                        uploadArea.querySelector('label').innerHTML = '✅ Imagen cargada<br><small>🎯 Lista para búsqueda IA</small>';
-                    }
-                    reader.readAsDataURL(file);
-                } else {
-                    preview.style.display = 'none';
-                    uploadArea.style.borderColor = '#dee2e6';
-                    uploadArea.style.background = 'linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(80, 227, 194, 0.05))';
-                    uploadArea.querySelector('label').innerHTML = '📷 Buscar por imagen IA<br><small>🎯 JPG, PNG, GIF hasta 10MB</small>';
-                }
-            });
-        }
-        
-        // Formulario de búsqueda con efectos dinámicos
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (searching) return;
-            
-            const query = document.getElementById('searchQuery').value.trim();
-            const imageFile = imageSearchAvailable ? document.getElementById('imageFile').files[0] : null;
-            
-            if (!query && !imageFile) {
-                return showError('🔍 Por favor ingresa un producto' + (imageSearchAvailable ? ' o sube una imagen' : ''));
-            }
-            
-            searching = true;
-            showLoading(imageFile ? '🤖 Analizando imagen con IA...' : '🔍 Buscando productos...');
-            
-            const submitBtn = document.querySelector('button[type="submit"]');
-            submitBtn.style.background = 'linear-gradient(45deg, #FF9800, #F57C00)';
-            submitBtn.innerHTML = '⏳ Buscando...';
-            
-            const timeoutId = setTimeout(() => { 
-                searching = false; 
-                hideLoading(); 
-                showError('⏰ Búsqueda muy lenta - Intenta de nuevo'); 
-                resetSubmitButton();
-            }, 20000);
-            
-            const formData = new FormData();
-            if (query) formData.append('query', query);
-            if (imageFile) formData.append('image_file', imageFile);
-            
-            fetch('/api/search', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => { 
-                clearTimeout(timeoutId); 
-                searching = false; 
-                return response.json(); 
-            })
-            .then(data => { 
-                hideLoading(); 
-                resetSubmitButton();
-                if (data.success) {
-                    showSuccess('✅ ¡Productos encontrados! Redirigiendo...');
-                    setTimeout(() => {
-                        window.location.href = '/results';
-                    }, 1000);
-                } else {
-                    showError('❌ ' + (data.error || 'Error en la búsqueda'));
-                }
-            })
-            .catch(error => { 
-                clearTimeout(timeoutId); 
-                searching = false; 
-                hideLoading(); 
-                resetSubmitButton();
-                showError('🌐 Error de conexión'); 
-            });
-        });
-        
-        function resetSubmitButton() {
-            const submitBtn = document.querySelector('button[type="submit"]');
-            submitBtn.style.background = 'linear-gradient(45deg, #4CAF50, #66BB6A)';
-            submitBtn.innerHTML = '🚀 Buscar';
-        }
-        
-        function showLoading(text = '🔍 Buscando productos...') { 
-            document.getElementById('loadingText').textContent = text;
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
-            loading.style.animation = 'fade-in 0.5s ease-out';
-            document.getElementById('error').style.display = 'none'; 
-        }
-        
-        function hideLoading() { 
-            const loading = document.getElementById('loading');
-            loading.style.animation = 'fade-out 0.3s ease-out';
-            setTimeout(() => {
-                loading.style.display = 'none';
-            }, 300);
-        }
-        
-        function showError(msg) { 
-            hideLoading(); 
-            const errorEl = document.getElementById('error'); 
-            errorEl.textContent = msg; 
-            errorEl.style.display = 'block';
-            errorEl.style.animation = 'shake 0.5s ease-in-out';
-            
-            setTimeout(() => {
-                errorEl.style.animation = 'fade-out 0.5s ease-out';
-                setTimeout(() => {
-                    errorEl.style.display = 'none';
-                }, 500);
-            }, 5000);
-        }
-        
-        function showSuccess(msg) {
-            const successEl = document.createElement('div');
-            successEl.className = 'flash success';
-            successEl.textContent = msg;
-            successEl.style.animation = 'flash-appear 0.5s ease-out';
-            
-            const container = document.querySelector('.container');
-            const firstChild = container.querySelector('.user-info').nextElementSibling;
-            container.insertBefore(successEl, firstChild);
-            
-            setTimeout(() => {
-                successEl.style.animation = 'fade-out 0.5s ease-out';
-                setTimeout(() => {
-                    successEl.remove();
-                }, 500);
-            }, 3000);
-        }
-        
-        // Efectos de teclado dinámicos
-        document.getElementById('searchQuery').addEventListener('input', function(e) {
-            const query = e.target.value;
-            if (query.length > 2) {
-                e.target.style.borderColor = '#4CAF50';
-                e.target.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.3)';
-            } else {
-                e.target.style.borderColor = '#e1e5e9';
-                e.target.style.boxShadow = 'none';
-            }
-        });
-        
-        // Efectos de parallax suaves en el scroll
-        window.addEventListener('scroll', function() {
-            const scrolled = window.pageYOffset;
-            const container = document.querySelector('.container');
-            if (container) {
-                container.style.transform = `translateY(${scrolled * 0.1}px)`;
-            }
-        });
-        
-        // CSS adicionales para animaciones
-        const additionalStyles = `
-            @keyframes fade-out {
-                from { opacity: 1; transform: translateY(0); }
-                to { opacity: 0; transform: translateY(-10px); }
-            }
-            
-            @keyframes bounce-in {
-                0% { transform: scale(0.3); opacity: 0; }
-                50% { transform: scale(1.05); opacity: 0.8; }
-                70% { transform: scale(0.9); opacity: 0.9; }
-                100% { transform: scale(1); opacity: 1; }
-            }
-            
-            .flash.success {
-                animation: bounce-in 0.6s ease-out !important;
-            }
-        `;
-        
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = additionalStyles;
-        document.head.appendChild(styleSheet);
-    </script>'''
-    
-    return render_template_string(render_page('🔍 Búsqueda Dinámica', content))
-
-@app.route('/api/search', methods=['POST'])
-@login_required
-def api_search():
-    try:
-        query = request.form.get('query', '').strip() if request.form.get('query') else None
-        image_file = request.files.get('image_file')
-        
-        image_content = None
-        if image_file and image_file.filename != '':
-            try:
-                image_content = image_file.read()
-                print(f"📷 Imagen recibida: {len(image_content)} bytes")
-                
-                if len(image_content) > 10 * 1024 * 1024:
-                    return jsonify({'success': False, 'error': 'La imagen es demasiado grande (máximo 10MB)'}), 400
-                    
-            except Exception as e:
-                print(f"❌ Error al leer imagen: {e}")
-                return jsonify({'success': False, 'error': 'Error al procesar la imagen'}), 400
-        
-        if not query and not image_content:
-            return jsonify({'success': False, 'error': 'Debe proporcionar una consulta o una imagen'}), 400
-        
-        if query and len(query) > 80:
-            query = query[:80]
-        
-        user_email = session.get('user_email', 'Unknown')
-        search_type = "imagen" if image_content and not query else "texto+imagen" if image_content and query else "texto"
-        print(f"Search request from {user_email}: {search_type}")
-        
-        products = price_finder.search_products(query=query, image_content=image_content)
-        
-        session['last_search'] = {
-            'query': query or "búsqueda por imagen",
-            'products': products,
-            'timestamp': datetime.now().isoformat(),
-            'user': user_email,
-            'search_type': search_type
-        }
-        
-        print(f"Search completed for {user_email}: {len(products)} products found")
-        return jsonify({'success': True, 'products': products, 'total': len(products)})
-        
-    except Exception as e:
-        print(f"Search error: {e}")
-        try:
-            query = request.form.get('query', 'producto') if request.form.get('query') else 'producto'
-            fallback = price_finder._get_examples(query)
-            session['last_search'] = {'query': str(query), 'products': fallback, 'timestamp': datetime.now().isoformat()}
-            return jsonify({'success': True, 'products': fallback, 'total': len(fallback)})
-        except:
-            return jsonify({'success': False, 'error': 'Error interno del servidor'}), 500
-
-@app.route('/results')
-@login_required
-def results_page():
-    try:
-        if 'last_search' not in session:
-            flash('No hay busquedas recientes.', 'warning')
-            return redirect(url_for('search_page'))
-        
-        current_user = firebase_auth.get_current_user()
-        user_name = current_user['user_name'] if current_user else 'Usuario'
-        user_name_escaped = html.escape(user_name)
-        
-        search_data = session['last_search']
-        products = search_data.get('products', [])
-        query = html.escape(str(search_data.get('query', 'busqueda')))
-        search_type = search_data.get('search_type', 'texto')
-        
-        products_html = ""
-        badges = ['🥇 MEJOR', '🥈 2do', '🥉 3ro']
-        colors = ['#4caf50', '#ff9800', '#9c27b0']
-        
-        for i, product in enumerate(products[:6]):
-            if not product:
-                continue
-            
-            badge = f'<div style="position: absolute; top: 10px; right: 10px; background: {colors[min(i, 2)]}; color: white; padding: 6px 12px; border-radius: 15px; font-size: 11px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: bounce-in 0.6s ease-out {i * 0.1}s both;">{badges[min(i, 2)]}</div>' if i < 3 else ''
-            
-            search_source_badge = ''
-            source = product.get('search_source', '')
-            if source == 'image':
-                search_source_badge = '<div style="position: absolute; top: 10px; left: 10px; background: #673ab7; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: bold; animation: slide-in-left 0.5s ease-out;">📷 IA</div>'
-            elif source == 'combined':
-                search_source_badge = '<div style="position: absolute; top: 10px; left: 10px; background: #607d8b; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: bold; animation: slide-in-left 0.5s ease-out;">🔗 MIXTO</div>'
-            
-            title = html.escape(str(product.get('title', 'Producto')))
-            price = html.escape(str(product.get('price', '$0.00')))
-            source_store = html.escape(str(product.get('source', 'Tienda')))
-            link = html.escape(str(product.get('link', '#')))
-            
-            products_html += f'''
-                <div style="border: 2px solid #e0e6ed; border-radius: 15px; padding: 20px; margin-bottom: 20px; background: linear-gradient(145deg, #ffffff, #f8f9fa); position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.1); transition: all 0.3s ease; animation: slide-up 0.6s ease-out {i * 0.1}s both;" onmouseover="this.style.transform='translateY(-5px) scale(1.02)'; this.style.boxShadow='0 15px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.1)'">
-                    {badge}
-                    {search_source_badge}
-                    <h3 style="color: #1a73e8; margin-bottom: 12px; font-size: 18px; margin-top: {'25px' if search_source_badge else '0'}; line-height: 1.4;">{title}</h3>
-                    <div style="font-size: 32px; color: #2e7d32; font-weight: bold; margin: 15px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">{price} <span style="font-size: 14px; color: #666;">USD</span></div>
-                    <p style="color: #666; margin-bottom: 15px; font-size: 14px;"><strong>🏪 Tienda:</strong> {source_store}</p>
-                    <a href="{link}" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(45deg, #1a73e8, #4285f4); color: white; padding: 12px 20px; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-block; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(26, 115, 232, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(26, 115, 232, 0.3)'">🛒 Ver Producto</a>
-                </div>'''
-        
-        prices = [p.get('price_numeric', 0) for p in products if p.get('price_numeric', 0) > 0]
-        stats = ""
-        if prices:
-            min_price = min(prices)
-            avg_price = sum(prices) / len(prices)
-            search_type_text = {"texto": "📝 texto", "imagen": "🤖 imagen IA", "texto+imagen": "🔗 texto + imagen IA", "combined": "🎯 búsqueda mixta"}.get(search_type, search_type)
-            min_price_formatted = f'{min_price:.2f}'
-            avg_price_formatted = f'{avg_price:.2f}'
-            products_count = str(len(products))
-            
-            stats = f'''
-                <div style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05)); border: 2px solid #4caf50; padding: 20px; border-radius: 15px; margin-bottom: 25px; position: relative; overflow: hidden; animation: slide-up 0.6s ease-out;">
-                    <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent); animation: slide-shine 3s ease-in-out infinite;"></div>
-                    <h3 style="color: #2e7d32; margin-bottom: 12px; font-size: 18px;">📊 Resultados de búsqueda ({search_type_text})</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 10px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">{products_count}</div>
-                            <div style="font-size: 12px; color: #666;">Productos</div>
-                        </div>
-                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 10px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">${min_price_formatted}</div>
-                            <div style="font-size: 12px; color: #666;">Mejor Precio</div>
-                        </div>
-                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 10px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #2e7d32;">${avg_price_formatted}</div>
-                            <div style="font-size: 12px; color: #666;">Precio Promedio</div>
-                        </div>
-                    </div>
-                </div>'''
-        
-        content = f'''
-        <div style="max-width: 900px; margin: 0 auto;">
-            <div class="user-info" style="background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff); background-size: 400% 400%; animation: rainbow-flow 4s ease infinite;">
-                <span style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.6); font-weight: 700; font-size: 18px; position: relative; z-index: 2;">🌈 {user_name_escaped} 🌈</span>
-                <div style="margin-left: 15px; position: relative; z-index: 2;">
-                    <a href="{url_for('auth_logout')}" class="logout-btn" style="margin-right: 8px;">✨ Salir</a>
-                    <a href="{url_for('search_page')}" class="home-btn">🔍 Nueva Búsqueda</a>
-                </div>
-            </div>
-            
-            <h1 style="color: white; text-align: center; margin-bottom: 10px; font-size: 2.5em; text-shadow: 0 4px 8px rgba(0,0,0,0.3); animation: title-glow 3s ease-in-out infinite alternate;">🎯 Resultados: "{query}"</h1>
-            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 30px; font-size: 16px; animation: fade-in 1s ease-out 0.3s both;">✅ Búsqueda completada con éxito</p>
-            
-            {stats}
-            {products_html}
-            
-            <div style="text-align: center; margin-top: 30px; animation: fade-in 1s ease-out 1s both;">
-                <a href="{url_for('search_page')}" style="background: linear-gradient(45deg, #4CAF50, #66BB6A); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; display: inline-block; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'; this.style.boxShadow='0 15px 40px rgba(76, 175, 80, 0.4)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 8px 25px rgba(76, 175, 80, 0.3)'">🔍 Nueva Búsqueda</a>
-            </div>
-        </div>
-        
-        <style>
-            @keyframes rainbow-flow {{
-                0% {{ background-position: 0% 50%; }}
-                50% {{ background-position: 100% 50%; }}
-                100% {{ background-position: 0% 50%; }}
-            }}
-            
-            @keyframes slide-up {{
-                from {{ opacity: 0; transform: translateY(30px); }}
-                to {{ opacity: 1; transform: translateY(0); }}
-            }}
-            
-            @keyframes bounce-in {{
-                0% {{ transform: scale(0.3); opacity: 0; }}
-                50% {{ transform: scale(1.05); opacity: 0.8; }}
-                70% {{ transform: scale(0.9); opacity: 0.9; }}
-                100% {{ transform: scale(1); opacity: 1; }}
-            }}
-            
-            @keyframes slide-in-left {{
-                from {{ opacity: 0; transform: translateX(-20px); }}
-                to {{ opacity: 1; transform: translateX(0); }}
-            }}
-            
-            @keyframes slide-shine {{
-                0% {{ left: -100%; }}
-                50% {{ left: 100%; }}
-                100% {{ left: 100%; }}
-            }}
-            
-            @keyframes title-glow {{
-                from {{ text-shadow: 0 4px 8px rgba(0,0,0,0.3); }}
-                to {{ text-shadow: 0 4px 20px rgba(255,255,255,0.4), 0 0 30px rgba(255,255,255,0.2); }}
-            }}
-        </style>'''
-        
-        return render_template_string(render_page('🎯 Resultados Dinámicos - Price Finder USA', content))
-    except Exception as e:
-        print(f"Results page error: {e}")
-        flash('Error al mostrar resultados.', 'danger')
-        return redirect(url_for('search_page'))
-
-@app.route('/api/health')
-def health_check():
-    try:
-        return jsonify({
-            'status': 'OK', 
-            'timestamp': datetime.now().isoformat(),
-            'firebase_auth': 'enabled' if firebase_auth.firebase_web_api_key else 'disabled',
-            'serpapi': 'enabled' if price_finder.is_api_configured() else 'disabled',
-            'gemini_vision': 'enabled' if GEMINI_READY else 'disabled',
-            'pil_available': 'enabled' if PIL_AVAILABLE else 'disabled',
-            'dynamic_ui': 'enabled'
-        })
-    except Exception as e:
-        return jsonify({'status': 'ERROR', 'message': str(e)}), 500
-
-# Middleware
-@app.before_request
-def before_request():
-    if 'timestamp' in session:
-        try:
-            timestamp_str = session['timestamp']
-            if isinstance(timestamp_str, str) and len(timestamp_str) > 10:
-                last_activity = datetime.fromisoformat(timestamp_str)
-                time_diff = (datetime.now() - last_activity).total_seconds()
-                if time_diff > 1200:  # 20 minutos
-                    session.clear()
-        except:
-            session.clear()
-    
-    session['timestamp'] = datetime.now().isoformat()
-
-@app.after_request
-def after_request(response):
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    return response
-
-# Error handlers
-@app.errorhandler(404)
-def not_found(error):
-    return '<h1>404 - Pagina no encontrada</h1><p><a href="/">Volver al inicio</a></p>', 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    return '<h1>500 - Error interno</h1><p><a href="/">Volver al inicio</a></p>', 500
-
-if __name__ == '__main__':
-    print("🌈 Price Finder USA DINÁMICO con Búsqueda por Imagen - Starting...")
-    print(f"Firebase: {'✅ OK' if os.environ.get('FIREBASE_WEB_API_KEY') else '❌ NOT_CONFIGURED'}")
-    print(f"SerpAPI: {'✅ OK' if os.environ.get('SERPAPI_KEY') else '❌ NOT_CONFIGURED'}")
-    print(f"Gemini Vision: {'✅ OK' if GEMINI_READY else '❌ NOT_CONFIGURED'}")
-    print(f"PIL/Pillow: {'✅ OK' if PIL_AVAILABLE else '❌ NOT_CONFIGURED'}")
-    print(f"Puerto: {os.environ.get('PORT', '5000')}")
-    print("🎨 Interfaz Dinámica: ✅ ACTIVADA")
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False, threaded=True)
-else:
-    import logging
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-    logging.getLogger('werkzeug').setLevel(logging.WARNING)# webapp.py - Price Finder USA con Búsqueda por Imagen - VERSIÓN DINÁMICA
+# webapp.py - Price Finder USA con Búsqueda por Imagen
 from flask import Flask, request, jsonify, session, redirect, url_for, render_template_string, flash
 import requests
 import os
@@ -1577,7 +453,7 @@ class PriceFinder:
 # Instancia global de PriceFinder
 price_finder = PriceFinder()
 
-# Templates DINÁMICOS MODERNOS
+# Templates
 def render_page(title, content):
     template = '''<!DOCTYPE html>
 <html lang="es">
@@ -1586,276 +462,574 @@ def render_page(title, content):
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root {
-            --primary-color: #4A90E2;
-            --secondary-color: #50E3C2;
-            --success-color: #4CAF50;
-            --warning-color: #FF9800;
-            --danger-color: #F44336;
-            --dark-color: #2C3E50;
-            --gradient-bg: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            --rainbow-gradient: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 15px; }
+        .container { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        h1 { color: #1a73e8; text-align: center; margin-bottom: 8px; font-size: 1.8em; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e1e5e9; border-radius: 6px; font-size: 16px; }
+        input:focus { outline: none; border-color: #1a73e8; }
+        button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; }
+        button:hover { background: #1557b0; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; }
+        .search-bar button { width: auto; padding: 12px 20px; }
+        .tips { background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; }
+        .error { background: #ffebee; color: #c62828; padding: 12px; border-radius: 6px; margin: 12px 0; display: none; }
+        .loading { text-align: center; padding: 30px; display: none; }
+        .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--gradient-bg);
-            min-height: 100vh;
-            padding: 15px;
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        /* PARTÍCULAS FLOTANTES DE FONDO */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            animation: float-particles 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        @keyframes float-particles {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(120deg); }
-            66% { transform: translateY(10px) rotate(240deg); }
-        }
-        
-        .container {
-            max-width: 650px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-            position: relative;
-            z-index: 1;
-            animation: slide-up 0.6s ease-out;
-        }
-        
-        @keyframes slide-up {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 8px;
-            font-size: 2.2em;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: title-glow 3s ease-in-out infinite alternate;
-        }
-        
-        @keyframes title-glow {
-            from {
-                filter: drop-shadow(0 0 5px rgba(74, 144, 226, 0.3));
-            }
-            to {
-                filter: drop-shadow(0 0 20px rgba(74, 144, 226, 0.6));
-            }
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            animation: fade-in 1s ease-out 0.3s both;
-        }
-        
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        /* INPUTS DINÁMICOS */
-        input {
-            width: 100%;
-            padding: 15px;
-            margin: 8px 0;
-            border: 2px solid #e1e5e9;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            position: relative;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 
-                0 8px 25px rgba(74, 144, 226, 0.15),
-                0 0 0 3px rgba(74, 144, 226, 0.1);
-        }
-        
-        input:hover {
-            border-color: var(--secondary-color);
-            transform: translateY(-1px);
-        }
-        
-        /* BOTONES DINÁMICOS */
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        button:hover::before {
-            left: 100%;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
-        }
-        
-        button:active {
-            transform: translateY(-1px);
-        }
-        
-        .search-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            animation: fade-in 1s ease-out 0.6s both;
-        }
-        
-        .search-bar input {
-            flex: 1;
-        }
-        
-        .search-bar button {
-            width: auto;
-            padding: 15px 25px;
-            background: linear-gradient(45deg, var(--success-color), #66BB6A);
-        }
-        
-        /* MENÚ ARCOÍRIS DINÁMICO */
-        .user-info {
-            background: var(--rainbow-gradient);
+        /* ESTILOS DEL MENÚ ARCOÍRIS */
+        .user-info { 
+            background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff); 
             background-size: 400% 400%;
-            animation: rainbow-flow 4s ease infinite;
-            padding: 18px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            text-align: center;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
+            animation: rainbow-gradient 3s ease infinite;
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            font-size: 14px; 
+            display: flex; 
+            align-items: center; 
             justify-content: center;
-            box-shadow: 
-                0 8px 30px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
         }
         
-        .user-info::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: rotate-shimmer 3s linear infinite;
-            pointer-events: none;
-        }
-        
-        @keyframes rainbow-flow {
+        @keyframes rainbow-gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
         
-        @keyframes rotate-shimmer {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         .user-info span {
             color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             font-weight: 700;
-            font-size: 18px;
-            position: relative;
-            z-index: 2;
+            font-size: 16px;
         }
         
-        .user-info a {
-            color: white;
-            text-decoration: none;
+        .user-info a { 
+            color: white; 
+            text-decoration: none; 
             font-weight: 700;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 10px 18px;
-            border-radius: 25px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.4);
             transition: all 0.3s ease;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-            position: relative;
-            z-index: 2;
-            backdrop-filter: blur(5px);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         .user-info a:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
         
         .user-info a.logout-btn {
-            background: rgba(244, 67, 54, 0.8);
+            background: rgba(220,53,69,0.8);
         }
         
         .user-info a.logout-btn:hover {
-            background: rgba(
+            background: rgba(220,53,69,1);
+        }
+        
+        .user-info a.home-btn {
+            background: rgba(40,167,69,0.8);
+        }
+        
+        .user-info a.home-btn:hover {
+            background: rgba(40,167,69,1);
+        }
+        
+        .flash { padding: 12px; margin-bottom: 8px; border-radius: 6px; font-size: 14px; }
+        .flash.success { background-color: #d4edda; color: #155724; }
+        .flash.danger { background-color: #f8d7da; color: #721c24; }
+        .flash.warning { background-color: #fff3cd; color: #856404; }
+        .image-upload { background: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 8px; padding: 20px; text-align: center; margin: 15px 0; transition: all 0.3s ease; }
+        .image-upload input[type="file"] { display: none; }
+        .image-upload label { cursor: pointer; color: #1a73e8; font-weight: 600; }
+        .image-upload:hover { border-color: #1a73e8; background: #e3f2fd; }
+        .image-preview { max-width: 150px; max-height: 150px; margin: 10px auto; border-radius: 8px; display: none; }
+        .or-divider { text-align: center; margin: 20px 0; color: #666; font-weight: 600; position: relative; }
+        .or-divider:before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #dee2e6; z-index: 1; }
+        .or-divider span { background: white; padding: 0 15px; position: relative; z-index: 2; }
+    </style>
+</head>
+<body>''' + content + '''</body>
+</html>'''
+    return template
+
+AUTH_LOGIN_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesion | Price Finder USA</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-container { max-width: 420px; width: 100%; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .form-header { text-align: center; padding: 30px 25px 15px; background: linear-gradient(45deg, #2C3E50, #4A90E2); color: white; }
+        .form-header h1 { font-size: 1.8em; margin-bottom: 8px; }
+        .form-header p { opacity: 0.9; font-size: 1em; }
+        .form-body { padding: 25px; }
+        form { display: flex; flex-direction: column; gap: 18px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-weight: 600; color: #2C3E50; font-size: 14px; }
+        .input-group input { padding: 14px 16px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.3s ease; }
+        .input-group input:focus { outline: 0; border-color: #4A90E2; }
+        .submit-btn { background: linear-gradient(45deg, #4A90E2, #2980b9); color: white; border: none; padding: 14px 25px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: transform 0.2s ease; }
+        .submit-btn:hover { transform: translateY(-2px); }
+        .flash-messages { list-style: none; padding: 0 25px 15px; }
+        .flash { padding: 12px; margin-bottom: 10px; border-radius: 6px; text-align: center; font-size: 14px; }
+        .flash.success { background-color: #d4edda; color: #155724; }
+        .flash.danger { background-color: #f8d7da; color: #721c24; }
+        .flash.warning { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="form-header">
+            <h1>Price Finder USA</h1>
+            <p>Iniciar Sesion</p>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for category, message in messages %}
+                        <li class="flash {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        <div class="form-body">
+            <form action="{{ url_for('auth_login') }}" method="post">
+                <div class="input-group">
+                    <label for="email">Correo Electronico</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <button type="submit" class="submit-btn">Entrar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+# Routes
+@app.route('/auth/login-page')
+def auth_login_page():
+    return render_template_string(AUTH_LOGIN_TEMPLATE)
+
+@app.route('/auth/login', methods=['POST'])
+def auth_login():
+    email = request.form.get('email', '').strip()
+    password = request.form.get('password', '').strip()
+    
+    if not email or not password:
+        flash('Por favor completa todos los campos.', 'danger')
+        return redirect(url_for('auth_login_page'))
+    
+    print(f"Login attempt for {email}")
+    result = firebase_auth.login_user(email, password)
+    
+    if result['success']:
+        firebase_auth.set_user_session(result['user_data'])
+        flash(result['message'], 'success')
+        print(f"Successful login for {email}")
+        return redirect(url_for('index'))
+    else:
+        flash(result['message'], 'danger')
+        print(f"Failed login for {email}")
+        return redirect(url_for('auth_login_page'))
+
+@app.route('/auth/logout')
+def auth_logout():
+    firebase_auth.clear_user_session()
+    flash('Has cerrado la sesion correctamente.', 'success')
+    return redirect(url_for('auth_login_page'))
+
+@app.route('/')
+def index():
+    if not firebase_auth.is_user_logged_in():
+        return redirect(url_for('auth_login_page'))
+    return redirect(url_for('search_page'))
+
+@app.route('/search')
+@login_required
+def search_page():
+    current_user = firebase_auth.get_current_user()
+    user_name = current_user['user_name'] if current_user else 'Usuario'
+    user_name_escaped = html.escape(user_name)
+    
+    # Verificar si búsqueda por imagen está disponible
+    image_search_available = GEMINI_READY and PIL_AVAILABLE
+    
+    content = '''
+    <div class="container">
+        <div class="user-info">
+            <span>🌈 ''' + user_name_escaped + ''' 🌈</span>
+            <div style="display: inline-block; margin-left: 15px;">
+                <a href="''' + url_for('auth_logout') + '''" class="logout-btn">✨ Salir</a>
+                <a href="''' + url_for('index') + '''" class="home-btn" style="margin-left: 8px;">🏠 Inicio</a>
+            </div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <h1>Buscar Productos</h1>
+        <p class="subtitle">''' + ('Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto') + ''' - Resultados en 15 segundos</p>
+        
+        <form id="searchForm" enctype="multipart/form-data">
+            <div class="search-bar">
+                <input type="text" id="searchQuery" name="query" placeholder="Busca cualquier producto...">
+                <button type="submit">Buscar</button>
+            </div>
+            
+            ''' + ('<div class="or-divider"><span>O sube una imagen</span></div>' if image_search_available else '') + '''
+            
+            ''' + ('<div class="image-upload" id="imageUpload"><input type="file" id="imageFile" name="image_file" accept="image/*"><label for="imageFile">📷 Buscar por imagen<br><small>JPG, PNG, GIF hasta 10MB</small></label><img id="imagePreview" class="image-preview" src="#" alt="Vista previa"></div>' if image_search_available else '') + '''
+        </form>
+        
+        <div class="tips">
+            <h4>Sistema optimizado''' + (' + Búsqueda por Imagen:' if image_search_available else ':') + '''</h4>
+            <ul style="margin: 8px 0 0 15px; font-size: 13px;">
+                <li><strong>Velocidad:</strong> Resultados en menos de 15 segundos</li>
+                <li><strong>USA:</strong> Amazon, Walmart, Target, Best Buy</li>
+                <li><strong>Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
+                ''' + ('<li><strong>🖼️ IA:</strong> Identifica productos en imágenes automáticamente</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>') + '''
+            </ul>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <h3>Buscando productos...</h3>
+            <p id="loadingText">Máximo 15 segundos</p>
+        </div>
+        <div id="error" class="error"></div>
+    </div>
+    
+    <script>
+        let searching = false;
+        const imageSearchAvailable = ''' + str(image_search_available).lower() + ''';
+        
+        // Manejo de vista previa de imagen
+        if (imageSearchAvailable) {
+            document.getElementById('imageFile').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const preview = document.getElementById('imagePreview');
+                
+                if (file) {
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('La imagen es demasiado grande (máximo 10MB)');
+                        this.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        document.getElementById('searchQuery').value = '';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
+        
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (searching) return;
+            
+            const query = document.getElementById('searchQuery').value.trim();
+            const imageFile = imageSearchAvailable ? document.getElementById('imageFile').files[0] : null;
+            
+            if (!query && !imageFile) {
+                return showError('Por favor ingresa un producto' + (imageSearchAvailable ? ' o sube una imagen' : ''));
+            }
+            
+            searching = true;
+            showLoading(imageFile ? '🖼️ Analizando imagen con IA...' : 'Buscando productos...');
+            
+            const timeoutId = setTimeout(() => { 
+                searching = false; 
+                hideLoading(); 
+                showError('Búsqueda muy lenta - Intenta de nuevo'); 
+            }, 20000);
+            
+            const formData = new FormData();
+            if (query) formData.append('query', query);
+            if (imageFile) formData.append('image_file', imageFile);
+            
+            fetch('/api/search', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => { 
+                clearTimeout(timeoutId); 
+                searching = false; 
+                return response.json(); 
+            })
+            .then(data => { 
+                hideLoading(); 
+                if (data.success) {
+                    window.location.href = '/results';
+                } else {
+                    showError(data.error || 'Error en la búsqueda');
+                }
+            })
+            .catch(error => { 
+                clearTimeout(timeoutId); 
+                searching = false; 
+                hideLoading(); 
+                showError('Error de conexión'); 
+            });
+        });
+        
+        function showLoading(text = 'Buscando productos...') { 
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loading').style.display = 'block'; 
+            document.getElementById('error').style.display = 'none'; 
+        }
+        function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+        function showError(msg) { 
+            hideLoading(); 
+            const e = document.getElementById('error'); 
+            e.textContent = msg; 
+            e.style.display = 'block'; 
+        }
+    </script>'''
+    
+    return render_template_string(render_page('Busqueda', content))
+
+@app.route('/api/search', methods=['POST'])
+@login_required
+def api_search():
+    try:
+        # Obtener parámetros
+        query = request.form.get('query', '').strip() if request.form.get('query') else None
+        image_file = request.files.get('image_file')
+        
+        # Procesar imagen si existe
+        image_content = None
+        if image_file and image_file.filename != '':
+            try:
+                image_content = image_file.read()
+                print(f"📷 Imagen recibida: {len(image_content)} bytes")
+                
+                # Validar tamaño (máximo 10MB)
+                if len(image_content) > 10 * 1024 * 1024:
+                    return jsonify({'success': False, 'error': 'La imagen es demasiado grande (máximo 10MB)'}), 400
+                    
+            except Exception as e:
+                print(f"❌ Error al leer imagen: {e}")
+                return jsonify({'success': False, 'error': 'Error al procesar la imagen'}), 400
+        
+        # Validar que hay al menos una entrada
+        if not query and not image_content:
+            return jsonify({'success': False, 'error': 'Debe proporcionar una consulta o una imagen'}), 400
+        
+        # Limitar longitud de query
+        if query and len(query) > 80:
+            query = query[:80]
+        
+        user_email = session.get('user_email', 'Unknown')
+        search_type = "imagen" if image_content and not query else "texto+imagen" if image_content and query else "texto"
+        print(f"Search request from {user_email}: {search_type}")
+        
+        # Realizar búsqueda con soporte para imagen
+        products = price_finder.search_products(query=query, image_content=image_content)
+        
+        session['last_search'] = {
+            'query': query or "búsqueda por imagen",
+            'products': products,
+            'timestamp': datetime.now().isoformat(),
+            'user': user_email,
+            'search_type': search_type
+        }
+        
+        print(f"Search completed for {user_email}: {len(products)} products found")
+        return jsonify({'success': True, 'products': products, 'total': len(products)})
+        
+    except Exception as e:
+        print(f"Search error: {e}")
+        try:
+            query = request.form.get('query', 'producto') if request.form.get('query') else 'producto'
+            fallback = price_finder._get_examples(query)
+            session['last_search'] = {'query': str(query), 'products': fallback, 'timestamp': datetime.now().isoformat()}
+            return jsonify({'success': True, 'products': fallback, 'total': len(fallback)})
+        except:
+            return jsonify({'success': False, 'error': 'Error interno del servidor'}), 500
+
+@app.route('/results')
+@login_required
+def results_page():
+    try:
+        if 'last_search' not in session:
+            flash('No hay busquedas recientes.', 'warning')
+            return redirect(url_for('search_page'))
+        
+        current_user = firebase_auth.get_current_user()
+        user_name = current_user['user_name'] if current_user else 'Usuario'
+        user_name_escaped = html.escape(user_name)
+        
+        search_data = session['last_search']
+        products = search_data.get('products', [])
+        query = html.escape(str(search_data.get('query', 'busqueda')))
+        search_type = search_data.get('search_type', 'texto')
+        
+        products_html = ""
+        badges = ['MEJOR', '2do', '3ro']
+        colors = ['#4caf50', '#ff9800', '#9c27b0']
+        
+        for i, product in enumerate(products[:6]):
+            if not product:
+                continue
+            
+            badge = '<div style="position: absolute; top: 8px; right: 8px; background: ' + colors[min(i, 2)] + '; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">' + badges[min(i, 2)] + '</div>' if i < 3 else ''
+            
+            # Badge de fuente de búsqueda
+            search_source_badge = ''
+            source = product.get('search_source', '')
+            if source == 'image':
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #673ab7; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">📷 IMAGEN</div>'
+            elif source == 'combined':
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #607d8b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🔗 MIXTO</div>'
+            
+            title = html.escape(str(product.get('title', 'Producto')))
+            price = html.escape(str(product.get('price', '$0.00')))
+            source_store = html.escape(str(product.get('source', 'Tienda')))
+            link = html.escape(str(product.get('link', '#')))
+            
+            products_html += '''
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
+                    ''' + badge + '''
+                    ''' + search_source_badge + '''
+                    <h3 style="color: #1a73e8; margin-bottom: 8px; font-size: 16px; margin-top: ''' + ('20px' if search_source_badge else '0') + ';">''' + title + '''</h3>
+                    <div style="font-size: 28px; color: #2e7d32; font-weight: bold; margin: 12px 0;">''' + price + ''' <span style="font-size: 12px; color: #666;">USD</span></div>
+                    <p style="color: #666; margin-bottom: 12px; font-size: 14px;">Tienda: ''' + source_store + '''</p>
+                    <a href="''' + link + '''" target="_blank" rel="noopener noreferrer" style="background: #1a73e8; color: white; padding: 10px 16px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 14px;">Ver Producto</a>
+                </div>'''
+        
+        prices = [p.get('price_numeric', 0) for p in products if p.get('price_numeric', 0) > 0]
+        stats = ""
+        if prices:
+            min_price = min(prices)
+            avg_price = sum(prices) / len(prices)
+            search_type_text = {"texto": "texto", "imagen": "imagen IA", "texto+imagen": "texto + imagen IA", "combined": "búsqueda mixta"}.get(search_type, search_type)
+            min_price_formatted = f'{min_price:.2f}'
+            avg_price_formatted = f'{avg_price:.2f}'
+            products_count = str(len(products))
+            
+            stats = f'''
+                <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
+                    <p><strong>{products_count} productos encontrados</strong></p>
+                    <p><strong>Mejor precio: ${min_price_formatted}</strong></p>
+                    <p><strong>Precio promedio: ${avg_price_formatted}</strong></p>
+                </div>'''
+        
+        content = '''
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="user-info" style="background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff00ff); background-size: 400% 400%; animation: rainbow-gradient 3s ease infinite;">
+                <span style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 700;">🌈 ''' + user_name_escaped + ''' 🌈</span>
+                <div style="margin-left: 15px;">
+                    <a href="''' + url_for('auth_logout') + '''" class="logout-btn" style="margin-right: 8px;">✨ Salir</a>
+                    <a href="''' + url_for('search_page') + '''" class="home-btn">🔍 Nueva Busqueda</a>
+                </div>
+            </div>
+            
+            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "''' + query + '''"</h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Busqueda completada</p>
+            
+            ''' + stats + '''
+            ''' + products_html + '''
+        </div>
+        
+        <style>
+            @keyframes rainbow-gradient {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        </style>'''
+        
+        return render_template_string(render_page('Resultados - Price Finder USA', content))
+    except Exception as e:
+        print(f"Results page error: {e}")
+        flash('Error al mostrar resultados.', 'danger')
+        return redirect(url_for('search_page'))
+
+@app.route('/api/health')
+def health_check():
+    try:
+        return jsonify({
+            'status': 'OK', 
+            'timestamp': datetime.now().isoformat(),
+            'firebase_auth': 'enabled' if firebase_auth.firebase_web_api_key else 'disabled',
+            'serpapi': 'enabled' if price_finder.is_api_configured() else 'disabled',
+            'gemini_vision': 'enabled' if GEMINI_READY else 'disabled',
+            'pil_available': 'enabled' if PIL_AVAILABLE else 'disabled'
+        })
+    except Exception as e:
+        return jsonify({'status': 'ERROR', 'message': str(e)}), 500
+
+# Middleware
+@app.before_request
+def before_request():
+    if 'timestamp' in session:
+        try:
+            timestamp_str = session['timestamp']
+            if isinstance(timestamp_str, str) and len(timestamp_str) > 10:
+                last_activity = datetime.fromisoformat(timestamp_str)
+                time_diff = (datetime.now() - last_activity).total_seconds()
+                if time_diff > 1200:  # 20 minutos
+                    session.clear()
+        except:
+            session.clear()
+    
+    session['timestamp'] = datetime.now().isoformat()
+
+@app.after_request
+def after_request(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
+
+# Error handlers
+@app.errorhandler(404)
+def not_found(error):
+    return '<h1>404 - Pagina no encontrada</h1><p><a href="/">Volver al inicio</a></p>', 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return '<h1>500 - Error interno</h1><p><a href="/">Volver al inicio</a></p>', 500
+
+if __name__ == '__main__':
+    print("Price Finder USA con Búsqueda por Imagen - Starting...")
+    print(f"Firebase: {'OK' if os.environ.get('FIREBASE_WEB_API_KEY') else 'NOT_CONFIGURED'}")
+    print(f"SerpAPI: {'OK' if os.environ.get('SERPAPI_KEY') else 'NOT_CONFIGURED'}")
+    print(f"Gemini Vision: {'OK' if GEMINI_READY else 'NOT_CONFIGURED'}")
+    print(f"PIL/Pillow: {'OK' if PIL_AVAILABLE else 'NOT_CONFIGURED'}")
+    print(f"Puerto: {os.environ.get('PORT', '5000')}")
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False, threaded=True)
+else:
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.getLogger('werkzeug').setLevel(logging.WARNING)
