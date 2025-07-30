@@ -930,10 +930,8 @@ def results_page():
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                     <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda (''' + search_type_text + ''')</h3>
                     <p><strong>''' + str(len(products)) + ''' productos encontrados</strong></p>
-                    <p><strong>Mejor precio: 
-    '' + f'{min_price:.2f}' + '''</strong></p>
-                    <p><strong>Precio promedio: 
-    '' + f'{avg_price:.2f}' + '''</strong></p>
+                    <p><strong>Mejor precio: '' + f'{min_price:.2f}' + '''</strong></p>
+                    <p><strong>Precio promedio: '' + f'{avg_price:.2f}' + '''</strong></p>
                 </div>'''
         
         content = '''
