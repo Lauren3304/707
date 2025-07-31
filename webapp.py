@@ -660,26 +660,26 @@ def search_page():
     # Verificar si búsqueda por imagen está disponible
     image_search_available = GEMINI_READY and PIL_AVAILABLE
     
-    content = '''
+    content = f'''
     <div class="container">
         <div class="user-info">
-            <span><strong>''' + user_name_escaped + '''</strong></span>
+            <span><strong>{user_name_escaped}</strong></span>
             <div style="display: inline-block; margin-left: 15px;">
-                <a href="''' + url_for('auth_logout') + '''" style="background: #dc3545; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
-                <a href="''' + url_for('index') + '''" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Inicio</a>
+                <a href="{url_for('auth_logout')}" style="background: #dc3545; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
+                <a href="{url_for('index')}" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Inicio</a>
             </div>
         </div>
         
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {{% with messages = get_flashed_messages(with_categories=true) %}}
+            {{% if messages %}}
+                {{% for category, message in messages %}}
+                    <div class="flash {{{{ category }}}}">{{{{ message }}}}</div>
+                {{% endfor %}}
+            {{% endif %}}
+        {{% endwith %}}
         
         <h1>Buscar Productos</h1>
-        <p class="subtitle">''' + ('Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto') + ''' - Resultados en 15 segundos</p>
+        <p class="subtitle">{'Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto'} - Resultados en 15 segundos</p>
         
         <form id="searchForm" enctype="multipart/form-data">
             <div class="search-bar">
@@ -687,18 +687,18 @@ def search_page():
                 <button type="submit">Buscar</button>
             </div>
             
-            ''' + ('<div class="or-divider"><span>O sube una imagen</span></div>' if image_search_available else '') + '''
+            {'<div class="or-divider"><span>O sube una imagen</span></div>' if image_search_available else ''}
             
-            ''' + ('<div class="image-upload" id="imageUpload"><input type="file" id="imageFile" name="image_file" accept="image/*"><label for="imageFile">📷 Buscar por imagen<br><small>JPG, PNG, GIF hasta 10MB</small></label><img id="imagePreview" class="image-preview" src="#" alt="Vista previa"></div>' if image_search_available else '') + '''
+            {'<div class="image-upload" id="imageUpload"><input type="file" id="imageFile" name="image_file" accept="image/*"><label for="imageFile">📷 Buscar por imagen<br><small>JPG, PNG, GIF hasta 10MB</small></label><img id="imagePreview" class="image-preview" src="#" alt="Vista previa"></div>' if image_search_available else ''}
         </form>
         
         <div class="tips">
-            <h4>Sistema optimizado''' + (' + Búsqueda por Imagen:' if image_search_available else ':') + '''</h4>
+            <h4>Sistema optimizado{' + Búsqueda por Imagen:' if image_search_available else ':'}</h4>
             <ul style="margin: 8px 0 0 15px; font-size: 13px;">
                 <li><strong>Velocidad:</strong> Resultados en menos de 15 segundos</li>
                 <li><strong>USA:</strong> Amazon, Walmart, Target, Best Buy</li>
                 <li><strong>Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
-                ''' + ('<li><strong>🖼️ IA:</strong> Identifica productos en imágenes automáticamente</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>') + '''
+                {'<li><strong>🖼️ IA:</strong> Identifica productos en imágenes automáticamente</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
             </ul>
         </div>
         
@@ -712,95 +712,95 @@ def search_page():
     
     <script>
         let searching = false;
-        const imageSearchAvailable = ''' + str(image_search_available).lower() + ''';
+        const imageSearchAvailable = {str(image_search_available).lower()};
         
         // Manejo de vista previa de imagen
-        if (imageSearchAvailable) {
-            document.getElementById('imageFile').addEventListener('change', function(e) {
+        if (imageSearchAvailable) {{
+            document.getElementById('imageFile').addEventListener('change', function(e) {{
                 const file = e.target.files[0];
                 const preview = document.getElementById('imagePreview');
                 
-                if (file) {
-                    if (file.size > 10 * 1024 * 1024) {
+                if (file) {{
+                    if (file.size > 10 * 1024 * 1024) {{
                         alert('La imagen es demasiado grande (máximo 10MB)');
                         this.value = '';
                         return;
-                    }
+                    }}
                     
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function(e) {{
                         preview.src = e.target.result;
                         preview.style.display = 'block';
                         document.getElementById('searchQuery').value = '';
-                    }
+                    }}
                     reader.readAsDataURL(file);
-                } else {
+                }} else {{
                     preview.style.display = 'none';
-                }
-            });
-        }
+                }}
+            }});
+        }}
         
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
+        document.getElementById('searchForm').addEventListener('submit', function(e) {{
             e.preventDefault();
             if (searching) return;
             
             const query = document.getElementById('searchQuery').value.trim();
             const imageFile = imageSearchAvailable ? document.getElementById('imageFile').files[0] : null;
             
-            if (!query && !imageFile) {
+            if (!query && !imageFile) {{
                 return showError('Por favor ingresa un producto' + (imageSearchAvailable ? ' o sube una imagen' : ''));
-            }
+            }}
             
             searching = true;
             showLoading(imageFile ? '🖼️ Analizando imagen con IA...' : 'Buscando productos...');
             
-            const timeoutId = setTimeout(() => { 
+            const timeoutId = setTimeout(() => {{ 
                 searching = false; 
                 hideLoading(); 
                 showError('Búsqueda muy lenta - Intenta de nuevo'); 
-            }, 20000);
+            }}, 20000);
             
             const formData = new FormData();
             if (query) formData.append('query', query);
             if (imageFile) formData.append('image_file', imageFile);
             
-            fetch('/api/search', {
+            fetch('/api/search', {{
                 method: 'POST',
                 body: formData
-            })
-            .then(response => { 
+            }})
+            .then(response => {{ 
                 clearTimeout(timeoutId); 
                 searching = false; 
                 return response.json(); 
-            })
-            .then(data => { 
+            }})
+            .then(data => {{ 
                 hideLoading(); 
-                if (data.success) {
+                if (data.success) {{
                     window.location.href = '/results';
-                } else {
+                }} else {{
                     showError(data.error || 'Error en la búsqueda');
-                }
-            })
-            .catch(error => { 
+                }}
+            }})
+            .catch(error => {{ 
                 clearTimeout(timeoutId); 
                 searching = false; 
                 hideLoading(); 
                 showError('Error de conexión'); 
-            });
-        });
+            }});
+        }});
         
-        function showLoading(text = 'Buscando productos...') { 
+        function showLoading(text = 'Buscando productos...') {{ 
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loading').style.display = 'block'; 
             document.getElementById('error').style.display = 'none'; 
-        }
-        function hideLoading() { document.getElementById('loading').style.display = 'none'; }
-        function showError(msg) { 
+        }}
+        function hideLoading() {{ document.getElementById('loading').style.display = 'none'; }}
+        function showError(msg) {{ 
             hideLoading(); 
             const e = document.getElementById('error'); 
             e.textContent = msg; 
             e.style.display = 'block'; 
-        }
+        }}
     </script>'''
     
     return render_template_string(render_page('Busqueda', content))
@@ -895,7 +895,7 @@ def results_page():
             if not product:
                 continue
             
-            badge = '<div style="position: absolute; top: 8px; right: 8px; background: ' + colors[min(i, 2)] + '; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">' + badges[min(i, 2)] + '</div>' if i < 3 else ''
+            badge = f'<div style="position: absolute; top: 8px; right: 8px; background: {colors[min(i, 2)]}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">{badges[min(i, 2)]}</div>' if i < 3 else ''
             
             # Badge de fuente de búsqueda
             search_source_badge = ''
@@ -910,14 +910,16 @@ def results_page():
             source_store = html.escape(str(product.get('source', 'Tienda')))
             link = html.escape(str(product.get('link', '#')))
             
-            products_html += '''
+            margin_top = '20px' if search_source_badge else '0'
+            
+            products_html += f'''
                 <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; background: white; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
-                    ''' + badge + '''
-                    ''' + search_source_badge + '''
-                    <h3 style="color: #1a73e8; margin-bottom: 8px; font-size: 16px; margin-top: ''' + ('20px' if search_source_badge else '0') + ';">''' + title + '''</h3>
-                    <div style="font-size: 28px; color: #2e7d32; font-weight: bold; margin: 12px 0;">''' + price + ''' <span style="font-size: 12px; color: #666;">USD</span></div>
-                    <p style="color: #666; margin-bottom: 12px; font-size: 14px;">Tienda: ''' + source_store + '''</p>
-                    <a href="''' + link + '''" target="_blank" rel="noopener noreferrer" style="background: #1a73e8; color: white; padding: 10px 16px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 14px;">Ver Producto</a>
+                    {badge}
+                    {search_source_badge}
+                    <h3 style="color: #1a73e8; margin-bottom: 8px; font-size: 16px; margin-top: {margin_top};">{title}</h3>
+                    <div style="font-size: 28px; color: #2e7d32; font-weight: bold; margin: 12px 0;">{price} <span style="font-size: 12px; color: #666;">USD</span></div>
+                    <p style="color: #666; margin-bottom: 12px; font-size: 14px;">Tienda: {source_store}</p>
+                    <a href="{link}" target="_blank" rel="noopener noreferrer" style="background: #1a73e8; color: white; padding: 10px 16px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 14px;">Ver Producto</a>
                 </div>'''
         
         prices = [p.get('price_numeric', 0) for p in products if p.get('price_numeric', 0) > 0]
@@ -926,29 +928,29 @@ def results_page():
             min_price = min(prices)
             avg_price = sum(prices) / len(prices)
             search_type_text = {"texto": "texto", "imagen": "imagen IA", "texto+imagen": "texto + imagen IA", "combined": "búsqueda mixta"}.get(search_type, search_type)
-            stats = '''
+            stats = f'''
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda (''' + search_type_text + ''')</h3>
-                    <p><strong>''' + str(len(products)) + ''' productos encontrados</strong></p>
-                    <p><strong>Mejor precio: '' + f'{min_price:.2f}' + '''</strong></p>
-                    <p><strong>Precio promedio: '' + f'{avg_price:.2f}' + '''</strong></p>
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
+                    <p><strong>{len(products)} productos encontrados</strong></p>
+                    <p><strong>Mejor precio: ${min_price:.2f}</strong></p>
+                    <p><strong>Precio promedio: ${avg_price:.2f}</strong></p>
                 </div>'''
         
-        content = '''
+        content = f'''
         <div style="max-width: 800px; margin: 0 auto;">
             <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center; display: flex; align-items: center; justify-content: center;">
-                <span style="color: white; font-size: 14px;"><strong>''' + user_name_escaped + '''</strong></span>
+                <span style="color: white; font-size: 14px;"><strong>{user_name_escaped}</strong></span>
                 <div style="margin-left: 15px;">
-                    <a href="''' + url_for('auth_logout') + '''" style="background: rgba(220,53,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
-                    <a href="''' + url_for('search_page') + '''" style="background: rgba(40,167,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Nueva Busqueda</a>
+                    <a href="{url_for('auth_logout')}" style="background: rgba(220,53,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px; margin-right: 8px;">Salir</a>
+                    <a href="{url_for('search_page')}" style="background: rgba(40,167,69,0.9); color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 13px;">Nueva Busqueda</a>
                 </div>
             </div>
             
-            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "''' + query + '''"</h1>
+            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}"</h1>
             <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Busqueda completada</p>
             
-            ''' + stats + '''
-            ''' + products_html + '''
+            {stats}
+            {products_html}
         </div>'''
         
         return render_template_string(render_page('Resultados - Price Finder USA', content))
