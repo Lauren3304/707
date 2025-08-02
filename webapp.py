@@ -1,7 +1,7 @@
 # ========================================
 # MÓDULO: IMPORTS Y CONFIGURACIÓN INICIAL
 # ========================================
-# webapp.py - Price Finder USA con Búsqueda por Imagen y Flowgent.ai
+# webapp.py - Price Finder USA con Búsqueda por Imagen y Asistente IA
 from flask import Flask, request, jsonify, session, redirect, url_for, render_template_string, flash
 import requests
 import os
@@ -294,10 +294,6 @@ def login_required(f):
 # ========================================
 # MÓDULO: FUNCIONES DE BÚSQUEDA POR IMAGEN
 # ========================================
-# ==============================================================================
-# FUNCIONES DE BÚSQUEDA POR IMAGEN
-# ==============================================================================
-
 def analyze_image_with_gemini(image_content):
     """Analiza imagen con Gemini Vision"""
     if not GEMINI_READY or not PIL_AVAILABLE or not image_content:
@@ -367,7 +363,6 @@ def validate_image(image_content):
 # ========================================
 # MÓDULO: CLASE PRICE FINDER
 # ========================================
-# Price Finder Class - Original sin modificaciones de IA
 class PriceFinder:
     def __init__(self):
         # Intentar multiples nombres de variables de entorno comunes
@@ -602,144 +597,7 @@ class PriceFinder:
         return examples
 
 # Instancia global de PriceFinder
-price_finder = PriceFinder()': str(item.get('reviews', '')),
-                    'image': ''
-                })
-                if len(products) >= 3:
-                    break
-            except Exception as e:
-                print(f"Error procesando item: {e}")
-                continue
-        return products
-    
-    def search_products(self, query=None, image_content=None):
-        """Búsqueda mejorada con soporte para imagen y Flowgent.ai"""
-        # Determinar consulta final
-        final_query = None
-        search_source = "text"
-        
-        if image_content and GEMINI_READY and PIL_AVAILABLE:
-            if validate_image(image_content):
-                if query:
-                    # Texto + imagen
-                    image_query = analyze_image_with_gemini(image_content)
-                    if image_query:
-                        # Mejorar consulta combinada con Flowgent.ai
-                        combined_query = f"{query} {image_query}"
-                        final_query = flowgent_ai.analyze_product_query(combined_query)
-                        search_source = "combined"
-                        print(f"🔗 Búsqueda combinada mejorada con IA: texto + imagen")
-                    else:
-                        final_query = flowgent_ai.analyze_product_query(query)
-                        search_source = "text_fallback"
-                        print(f"📝 Imagen falló, usando solo texto mejorado con IA")
-                else:
-                    # Solo imagen
-                    image_query = analyze_image_with_gemini(image_content)
-                    final_query = image_query  # Ya mejorado por Flowgent en analyze_image_with_gemini
-                    search_source = "image"
-                    print(f"🖼️ Búsqueda basada en imagen mejorada con IA")
-            else:
-                print("❌ Imagen inválida")
-                final_query = flowgent_ai.analyze_product_query(query) if query else "producto"
-                search_source = "text"
-        else:
-            # Solo texto o imagen no disponible
-            if query:
-                final_query = flowgent_ai.analyze_product_query(query)
-                search_source = "text"
-                print(f"📝 Búsqueda de texto mejorada con Flowgent.ai")
-            else:
-                final_query = "producto"
-                search_source = "text"
-            
-            if image_content and not GEMINI_READY:
-                print("⚠️ Imagen proporcionada pero Gemini no está configurado")
-        
-        if not final_query or len(final_query.strip()) < 2:
-            return self._get_examples("producto")
-        
-        final_query = final_query.strip()
-        print(f"📝 Búsqueda final optimizada: '{final_query}' (fuente: {search_source})")
-        
-        # Continuar con lógica de búsqueda existente
-        if not self.api_key:
-            print("Sin API key - usando ejemplos")
-            return self._get_examples(final_query)
-        
-        cache_key = f"search_{hash(final_query.lower())}"
-        if cache_key in self.cache:
-            cache_data, timestamp = self.cache[cache_key]
-            if (time.time() - timestamp) < self.cache_ttl:
-                return cache_data
-        
-        start_time = time.time()
-        all_products = []
-        
-        if time.time() - start_time < 8:
-            query_optimized = f'"{final_query}" buy online'
-            data = self._make_api_request('google_shopping', query_optimized)
-            products = self._process_results(data, 'google_shopping')
-            all_products.extend(products)
-        
-        if not all_products:
-            all_products = self._get_examples(final_query)
-        
-        all_products.sort(key=lambda x: x['price_numeric'])
-        final_products = all_products[:6]
-        
-        # Añadir metadata
-        for product in final_products:
-            product['search_source'] = search_source
-            product['original_query'] = query if query else "imagen"
-        
-        # Generar recomendaciones con Flowgent.ai
-        recommendations = flowgent_ai.get_product_recommendations(final_products)
-        if recommendations:
-            # Guardar recomendaciones en el primer producto para mostrarlas después
-            if final_products:
-                final_products[0]['flowgent_recommendations'] = recommendations
-        
-        self.cache[cache_key] = (final_products, time.time())
-        if len(self.cache) > 10:
-            oldest_key = min(self.cache.keys(), key=lambda k: self.cache[k][1])
-            del self.cache[oldest_key]
-        
-        return final_products
-    
-    def _get_examples(self, query):
-        stores = ['Amazon', 'Walmart', 'Target']
-        examples = []
-        for i in range(3):
-            price = self._generate_realistic_price(query, i)
-            store = stores[i]
-            search_query = quote_plus(str(query)[:30])
-            if store == 'Amazon':
-                link = f"https://www.amazon.com/s?k={search_query}"
-            elif store == 'Walmart':
-                link = f"https://www.walmart.com/search?q={search_query}"
-            else:
-                link = f"https://www.target.com/s?searchTerm={search_query}"
-            
-            examples.append({
-                'title': f'{self._clean_text(query)} - {["Mejor Precio", "Oferta", "Popular"][i]}',
-                'price': f'${price:.2f}',
-                'price_numeric': price,
-                'source': store,
-                'link': link,
-                'rating': ['4.5', '4.2', '4.0'][i],
-                'reviews': ['500', '300', '200'][i],
-                'image': '',
-                'search_source': 'example'
-            })
-        return examples
-
-# Instancia global de PriceFinder
 price_finder = PriceFinder()
-# ========================================
-# FIN MÓDULO: CLASE PRICE FINDER - MODIFICADO CON FLOWGENT.AI
-# ========================================
-
 # ========================================
 # FIN MÓDULO: CLASE PRICE FINDER
 # ========================================
@@ -747,7 +605,6 @@ price_finder = PriceFinder()
 # ========================================
 # MÓDULO: TEMPLATES HTML - ACTUALIZADO CON ASISTENTE
 # ========================================
-# Templates
 def render_page(title, content):
     template = '''<!DOCTYPE html>
 <html lang="es">
@@ -996,7 +853,6 @@ AUTH_LOGIN_TEMPLATE = """
 # ========================================
 # MÓDULO: RUTAS DE AUTENTICACIÓN
 # ========================================
-# Routes
 @app.route('/auth/login-page')
 def auth_login_page():
     return render_template_string(AUTH_LOGIN_TEMPLATE)
@@ -1093,15 +949,12 @@ def search_page():
                 {'<li><strong>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
                 <li><strong>💬 Consultas:</strong> Pregunta sobre métodos de pago, envíos, etc.</li>
             </ul>
-        </div>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
-                <li><strong>💡 Recomendaciones:</strong> Consejos inteligentes de compra</li>
-            </ul>
         </div>
         
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <h3>Analizando con IA...</h3>
-            <p id="loadingText">Optimizando búsqueda...</p>
+            <h3>Buscando productos...</h3>
+            <p id="loadingText">Máximo 15 segundos</p>
         </div>
         <div id="error" class="error"></div>
     </div>
@@ -1149,13 +1002,13 @@ def search_page():
             
             searching = true;
             
-            let loadingText = 'Optimizando búsqueda con IA...';
+            let loadingText = 'Buscando productos...';
             if (imageFile && query) {{
-                loadingText = '🖼️🤖 Analizando imagen y texto con IA...';
+                loadingText = '🖼️ Analizando imagen y texto...';
             }} else if (imageFile) {{
-                loadingText = '🖼️🤖 Analizando imagen con IA...';
+                loadingText = '🖼️ Analizando imagen...';
             }} else {{
-                loadingText = '🤖 Optimizando consulta con IA...';
+                loadingText = 'Buscando productos...';
             }}
             
             showLoading(loadingText);
@@ -1164,7 +1017,7 @@ def search_page():
                 searching = false; 
                 hideLoading(); 
                 showError('Búsqueda muy lenta - Intenta de nuevo'); 
-            }}, 25000);
+            }}, 20000);
             
             const formData = new FormData();
             if (query) formData.append('query', query);
@@ -1195,7 +1048,7 @@ def search_page():
             }});
         }});
         
-        function showLoading(text = 'Analizando con IA...') {{ 
+        function showLoading(text = 'Buscando productos...') {{ 
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loading').style.display = 'block'; 
             document.getElementById('error').style.display = 'none'; 
@@ -1456,7 +1309,6 @@ def assistant_test():
 # ========================================
 # MÓDULO: MIDDLEWARE Y CONFIGURACIÓN DE SEGURIDAD
 # ========================================
-# Middleware
 @app.before_request
 def before_request():
     if 'timestamp' in session:
@@ -1485,7 +1337,6 @@ def after_request(response):
 # ========================================
 # MÓDULO: MANEJADORES DE ERRORES
 # ========================================
-# Error handlers
 @app.errorhandler(404)
 def not_found(error):
     return '<h1>404 - Pagina no encontrada</h1><p><a href="/">Volver al inicio</a></p>', 404
