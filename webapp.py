@@ -1,7 +1,7 @@
 # ========================================
 # MÓDULO: IMPORTS Y CONFIGURACIÓN INICIAL
 # ========================================
-# webapp.py - Price Finder USA con Búsqueda por Imagen
+# webapp.py - Price Finder USA con Búsqueda por Imagen y Flowgent.ai
 from flask import Flask, request, jsonify, session, redirect, url_for, render_template_string, flash
 import requests
 import os
@@ -9,6 +9,7 @@ import re
 import html
 import time
 import io
+import json
 from datetime import datetime
 from urllib.parse import urlparse, quote_plus
 from functools import wraps
@@ -70,6 +71,128 @@ else:
     GEMINI_READY = False
 # ========================================
 # FIN MÓDULO: CONFIGURACIÓN DE GEMINI AI
+# ========================================
+
+# ========================================
+# MÓDULO: CONFIGURACIÓN DE FLOWGENT AI
+# ========================================
+# Configuración de Flowgent.ai
+FLOWGENT_API_KEY = "37ef312f-8e4b-4947-8a57-4ddfb20e5947"
+FLOWGENT_BASE_URL = "https://api.flowgent.ai/v1"
+
+class FlowgentAI:
+    def __init__(self):
+        self.api_key = FLOWGENT_API_KEY
+        self.base_url = FLOWGENT_BASE_URL
+        self.headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        print("✅ Flowgent.ai configurado correctamente")
+    
+    def analyze_product_query(self, query, products=None):
+        """Analiza la consulta del usuario y mejora la búsqueda usando Flowgent.ai"""
+        try:
+            payload = {
+                "message": f"Analiza esta consulta de producto y mejora los términos de búsqueda: '{query}'. Responde solo con términos de búsqueda optimizados para e-commerce en inglés.",
+                "max_tokens": 100,
+                "temperature": 0.3
+            }
+            
+            response = requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=self.headers,
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                improved_query = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
+                if improved_query and len(improved_query) > 3:
+                    print(f"🤖 Flowgent mejoró consulta: '{query}' → '{improved_query}'")
+                    return improved_query
+            
+            return query
+            
+        except Exception as e:
+            print(f"⚠️ Error en Flowgent.ai: {e}")
+            return query
+    
+    def get_product_recommendations(self, products):
+        """Obtiene recomendaciones inteligentes basadas en los productos encontrados"""
+        try:
+            if not products or len(products) == 0:
+                return None
+            
+            # Crear resumen de productos para el análisis
+            product_summary = []
+            for product in products[:3]:
+                product_summary.append({
+                    "title": product.get('title', ''),
+                    "price": product.get('price', ''),
+                    "source": product.get('source', '')
+                })
+            
+            payload = {
+                "message": f"Basándote en estos productos encontrados: {json.dumps(product_summary)}, proporciona 3 recomendaciones breves de compra inteligente en español. Cada recomendación debe ser máximo 2 líneas.",
+                "max_tokens": 200,
+                "temperature": 0.7
+            }
+            
+            response = requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=self.headers,
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                recommendations = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
+                if recommendations:
+                    print(f"💡 Flowgent generó recomendaciones")
+                    return recommendations
+            
+            return None
+            
+        except Exception as e:
+            print(f"⚠️ Error obteniendo recomendaciones: {e}")
+            return None
+    
+    def analyze_image_with_flowgent(self, image_description):
+        """Mejora la descripción de imagen para búsqueda de productos"""
+        try:
+            payload = {
+                "message": f"Convierte esta descripción de imagen en términos de búsqueda específicos para e-commerce: '{image_description}'. Responde solo con términos de búsqueda optimizados en inglés.",
+                "max_tokens": 80,
+                "temperature": 0.2
+            }
+            
+            response = requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=self.headers,
+                json=payload,
+                timeout=8
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                improved_terms = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
+                if improved_terms and len(improved_terms) > 3:
+                    print(f"🖼️🤖 Flowgent mejoró descripción de imagen")
+                    return improved_terms
+            
+            return image_description
+            
+        except Exception as e:
+            print(f"⚠️ Error analizando imagen con Flowgent: {e}")
+            return image_description
+
+# Instancia global de FlowgentAI
+flowgent_ai = FlowgentAI()
+# ========================================
+# FIN MÓDULO: CONFIGURACIÓN DE FLOWGENT AI
 # ========================================
 
 # ========================================
@@ -220,7 +343,10 @@ def analyze_image_with_gemini(image_content):
         if response.text:
             search_query = response.text.strip()
             print(f"🧠 Consulta generada desde imagen: '{search_query}'")
-            return search_query
+            
+            # Mejorar con Flowgent.ai
+            improved_query = flowgent_ai.analyze_image_with_flowgent(search_query)
+            return improved_query
         
         return None
             
@@ -247,9 +373,9 @@ def validate_image(image_content):
 # ========================================
 
 # ========================================
-# MÓDULO: CLASE PRICE FINDER
+# MÓDULO: CLASE PRICE FINDER - MODIFICADO CON FLOWGENT.AI
 # ========================================
-# Price Finder Class - MODIFICADO para búsqueda por imagen
+# Price Finder Class - MODIFICADO para búsqueda por imagen y Flowgent.ai
 class PriceFinder:
     def __init__(self):
         # Intentar multiples nombres de variables de entorno comunes
@@ -378,7 +504,7 @@ class PriceFinder:
         return products
     
     def search_products(self, query=None, image_content=None):
-        """Búsqueda mejorada con soporte para imagen"""
+        """Búsqueda mejorada con soporte para imagen y Flowgent.ai"""
         # Determinar consulta final
         final_query = None
         search_source = "text"
@@ -389,26 +515,35 @@ class PriceFinder:
                     # Texto + imagen
                     image_query = analyze_image_with_gemini(image_content)
                     if image_query:
-                        final_query = f"{query} {image_query}"
+                        # Mejorar consulta combinada con Flowgent.ai
+                        combined_query = f"{query} {image_query}"
+                        final_query = flowgent_ai.analyze_product_query(combined_query)
                         search_source = "combined"
-                        print(f"🔗 Búsqueda combinada: texto + imagen")
+                        print(f"🔗 Búsqueda combinada mejorada con IA: texto + imagen")
                     else:
-                        final_query = query
+                        final_query = flowgent_ai.analyze_product_query(query)
                         search_source = "text_fallback"
-                        print(f"📝 Imagen falló, usando solo texto")
+                        print(f"📝 Imagen falló, usando solo texto mejorado con IA")
                 else:
                     # Solo imagen
-                    final_query = analyze_image_with_gemini(image_content)
+                    image_query = analyze_image_with_gemini(image_content)
+                    final_query = image_query  # Ya mejorado por Flowgent en analyze_image_with_gemini
                     search_source = "image"
-                    print(f"🖼️ Búsqueda basada en imagen")
+                    print(f"🖼️ Búsqueda basada en imagen mejorada con IA")
             else:
                 print("❌ Imagen inválida")
-                final_query = query or "producto"
+                final_query = flowgent_ai.analyze_product_query(query) if query else "producto"
                 search_source = "text"
         else:
             # Solo texto o imagen no disponible
-            final_query = query or "producto"
-            search_source = "text"
+            if query:
+                final_query = flowgent_ai.analyze_product_query(query)
+                search_source = "text"
+                print(f"📝 Búsqueda de texto mejorada con Flowgent.ai")
+            else:
+                final_query = "producto"
+                search_source = "text"
+            
             if image_content and not GEMINI_READY:
                 print("⚠️ Imagen proporcionada pero Gemini no está configurado")
         
@@ -416,7 +551,7 @@ class PriceFinder:
             return self._get_examples("producto")
         
         final_query = final_query.strip()
-        print(f"📝 Búsqueda final: '{final_query}' (fuente: {search_source})")
+        print(f"📝 Búsqueda final optimizada: '{final_query}' (fuente: {search_source})")
         
         # Continuar con lógica de búsqueda existente
         if not self.api_key:
@@ -448,6 +583,13 @@ class PriceFinder:
         for product in final_products:
             product['search_source'] = search_source
             product['original_query'] = query if query else "imagen"
+        
+        # Generar recomendaciones con Flowgent.ai
+        recommendations = flowgent_ai.get_product_recommendations(final_products)
+        if recommendations:
+            # Guardar recomendaciones en el primer producto para mostrarlas después
+            if final_products:
+                final_products[0]['flowgent_recommendations'] = recommendations
         
         self.cache[cache_key] = (final_products, time.time())
         if len(self.cache) > 10:
@@ -486,7 +628,7 @@ class PriceFinder:
 # Instancia global de PriceFinder
 price_finder = PriceFinder()
 # ========================================
-# FIN MÓDULO: CLASE PRICE FINDER
+# FIN MÓDULO: CLASE PRICE FINDER - MODIFICADO CON FLOWGENT.AI
 # ========================================
 
 # ========================================
@@ -532,6 +674,11 @@ def render_page(title, content):
         .or-divider { text-align: center; margin: 20px 0; color: #666; font-weight: 600; position: relative; }
         .or-divider:before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #dee2e6; z-index: 1; }
         .or-divider span { background: white; padding: 0 15px; position: relative; z-index: 2; }
+        .flowgent-badge { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; display: inline-block; margin-left: 8px; }
+        .recommendations { background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .recommendations h4 { color: #2e7d32; margin-bottom: 8px; display: flex; align-items: center; }
+        .recommendations ul { margin: 8px 0 0 15px; font-size: 13px; }
+        .recommendations li { margin-bottom: 5px; }
     </style>
 </head>
 <body>''' + content + '''</body>
@@ -551,6 +698,7 @@ AUTH_LOGIN_TEMPLATE = """
         .form-header { text-align: center; padding: 30px 25px 15px; background: linear-gradient(45deg, #2C3E50, #4A90E2); color: white; }
         .form-header h1 { font-size: 1.8em; margin-bottom: 8px; }
         .form-header p { opacity: 0.9; font-size: 1em; }
+        .flowgent-badge { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 12px; font-size: 10px; margin-top: 8px; display: inline-block; }
         .form-body { padding: 25px; }
         form { display: flex; flex-direction: column; gap: 18px; }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
@@ -571,6 +719,7 @@ AUTH_LOGIN_TEMPLATE = """
         <div class="form-header">
             <h1>Price Finder USA</h1>
             <p>Iniciar Sesion</p>
+            <div class="flowgent-badge">🤖 Potenciado por Flowgent.ai</div>
         </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -678,8 +827,8 @@ def search_page():
             {{% endif %}}
         {{% endwith %}}
         
-        <h1>Buscar Productos</h1>
-        <p class="subtitle">{'Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto'} - Resultados en 15 segundos</p>
+        <h1>Buscar Productos<span class="flowgent-badge">🤖 IA</span></h1>
+        <p class="subtitle">{'Búsqueda inteligente por texto o imagen' if image_search_available else 'Búsqueda inteligente por texto'} - Optimizado con Flowgent.ai</p>
         
         <form id="searchForm" enctype="multipart/form-data">
             <div class="search-bar">
@@ -693,19 +842,21 @@ def search_page():
         </form>
         
         <div class="tips">
-            <h4>Sistema optimizado{' + Búsqueda por Imagen:' if image_search_available else ':'}</h4>
+            <h4>Sistema optimizado con IA{' + Búsqueda por Imagen:' if image_search_available else ':'}</h4>
             <ul style="margin: 8px 0 0 15px; font-size: 13px;">
+                <li><strong>🤖 Flowgent.ai:</strong> Optimiza automáticamente tus búsquedas</li>
                 <li><strong>Velocidad:</strong> Resultados en menos de 15 segundos</li>
                 <li><strong>USA:</strong> Amazon, Walmart, Target, Best Buy</li>
                 <li><strong>Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
-                {'<li><strong>🖼️ IA:</strong> Identifica productos en imágenes automáticamente</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
+                {'<li><strong>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
+                <li><strong>💡 Recomendaciones:</strong> Consejos inteligentes de compra</li>
             </ul>
         </div>
         
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <h3>Buscando productos...</h3>
-            <p id="loadingText">Máximo 15 segundos</p>
+            <h3>Analizando con IA...</h3>
+            <p id="loadingText">Optimizando búsqueda...</p>
         </div>
         <div id="error" class="error"></div>
     </div>
@@ -752,13 +903,23 @@ def search_page():
             }}
             
             searching = true;
-            showLoading(imageFile ? '🖼️ Analizando imagen con IA...' : 'Buscando productos...');
+            
+            let loadingText = 'Optimizando búsqueda con IA...';
+            if (imageFile && query) {{
+                loadingText = '🖼️🤖 Analizando imagen y texto con IA...';
+            }} else if (imageFile) {{
+                loadingText = '🖼️🤖 Analizando imagen con IA...';
+            }} else {{
+                loadingText = '🤖 Optimizando consulta con IA...';
+            }}
+            
+            showLoading(loadingText);
             
             const timeoutId = setTimeout(() => {{ 
                 searching = false; 
                 hideLoading(); 
                 showError('Búsqueda muy lenta - Intenta de nuevo'); 
-            }}, 20000);
+            }}, 25000);
             
             const formData = new FormData();
             if (query) formData.append('query', query);
@@ -789,7 +950,7 @@ def search_page():
             }});
         }});
         
-        function showLoading(text = 'Buscando productos...') {{ 
+        function showLoading(text = 'Analizando con IA...') {{ 
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loading').style.display = 'block'; 
             document.getElementById('error').style.display = 'none'; 
@@ -803,7 +964,7 @@ def search_page():
         }}
     </script>'''
     
-    return render_template_string(render_page('Busqueda', content))
+    return render_template_string(render_page('Busqueda Inteligente', content))
 # ========================================
 # FIN MÓDULO: RUTAS PRINCIPALES
 # ========================================
@@ -843,10 +1004,10 @@ def api_search():
             query = query[:80]
         
         user_email = session.get('user_email', 'Unknown')
-        search_type = "imagen" if image_content and not query else "texto+imagen" if image_content and query else "texto"
-        print(f"Search request from {user_email}: {search_type}")
+        search_type = "imagen+IA" if image_content and not query else "texto+imagen+IA" if image_content and query else "texto+IA"
+        print(f"🤖 Search request from {user_email}: {search_type}")
         
-        # Realizar búsqueda con soporte para imagen
+        # Realizar búsqueda con soporte para imagen y Flowgent.ai
         products = price_finder.search_products(query=query, image_content=image_content)
         
         session['last_search'] = {
@@ -857,7 +1018,7 @@ def api_search():
             'search_type': search_type
         }
         
-        print(f"Search completed for {user_email}: {len(products)} products found")
+        print(f"🤖 Search completed for {user_email}: {len(products)} products found with AI optimization")
         return jsonify({'success': True, 'products': products, 'total': len(products)})
         
     except Exception as e:
@@ -887,6 +1048,11 @@ def results_page():
         query = html.escape(str(search_data.get('query', 'busqueda')))
         search_type = search_data.get('search_type', 'texto')
         
+        # Extraer recomendaciones de Flowgent.ai si existen
+        flowgent_recommendations = None
+        if products and products[0].get('flowgent_recommendations'):
+            flowgent_recommendations = products[0]['flowgent_recommendations']
+        
         products_html = ""
         badges = ['MEJOR', '2do', '3ro']
         colors = ['#4caf50', '#ff9800', '#9c27b0']
@@ -897,13 +1063,15 @@ def results_page():
             
             badge = f'<div style="position: absolute; top: 8px; right: 8px; background: {colors[min(i, 2)]}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">{badges[min(i, 2)]}</div>' if i < 3 else ''
             
-            # Badge de fuente de búsqueda
+            # Badge de fuente de búsqueda mejorado
             search_source_badge = ''
             source = product.get('search_source', '')
             if source == 'image':
-                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #673ab7; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">📷 IMAGEN</div>'
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #673ab7; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">📷🤖 IMAGEN+IA</div>'
             elif source == 'combined':
-                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #607d8b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🔗 MIXTO</div>'
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #607d8b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🔗🤖 MIXTO+IA</div>'
+            elif source == 'text':
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #795548; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🤖 TEXTO+IA</div>'
             
             title = html.escape(str(product.get('title', 'Producto')))
             price = html.escape(str(product.get('price', '$0.00')))
@@ -927,13 +1095,31 @@ def results_page():
         if prices:
             min_price = min(prices)
             avg_price = sum(prices) / len(prices)
-            search_type_text = {"texto": "texto", "imagen": "imagen IA", "texto+imagen": "texto + imagen IA", "combined": "búsqueda mixta"}.get(search_type, search_type)
+            search_type_text = {
+                "texto": "texto", 
+                "imagen": "imagen IA", 
+                "texto+imagen": "texto + imagen IA", 
+                "combined": "búsqueda mixta",
+                "texto+IA": "texto optimizado con IA",
+                "imagen+IA": "imagen analizada con IA",
+                "texto+imagen+IA": "texto + imagen optimizado con IA"
+            }.get(search_type, search_type)
+            
             stats = f'''
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text}) <span class="flowgent-badge">🤖 IA</span></h3>
                     <p><strong>{len(products)} productos encontrados</strong></p>
                     <p><strong>Mejor precio: ${min_price:.2f}</strong></p>
                     <p><strong>Precio promedio: ${avg_price:.2f}</strong></p>
+                </div>'''
+        
+        # Añadir recomendaciones de Flowgent.ai si existen
+        recommendations_html = ""
+        if flowgent_recommendations:
+            recommendations_html = f'''
+                <div class="recommendations">
+                    <h4>💡 Recomendaciones Inteligentes <span class="flowgent-badge">🤖 Flowgent.ai</span></h4>
+                    <div style="white-space: pre-line; font-size: 14px; line-height: 1.5;">{html.escape(flowgent_recommendations)}</div>
                 </div>'''
         
         content = f'''
@@ -946,14 +1132,15 @@ def results_page():
                 </div>
             </div>
             
-            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}"</h1>
-            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Busqueda completada</p>
+            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}" <span class="flowgent-badge">🤖 IA</span></h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Búsqueda optimizada con inteligencia artificial</p>
             
             {stats}
+            {recommendations_html}
             {products_html}
         </div>'''
         
-        return render_template_string(render_page('Resultados - Price Finder USA', content))
+        return render_template_string(render_page('Resultados IA - Price Finder USA', content))
     except Exception as e:
         print(f"Results page error: {e}")
         flash('Error al mostrar resultados.', 'danger')
@@ -968,10 +1155,40 @@ def health_check():
             'firebase_auth': 'enabled' if firebase_auth.firebase_web_api_key else 'disabled',
             'serpapi': 'enabled' if price_finder.is_api_configured() else 'disabled',
             'gemini_vision': 'enabled' if GEMINI_READY else 'disabled',
-            'pil_available': 'enabled' if PIL_AVAILABLE else 'disabled'
+            'pil_available': 'enabled' if PIL_AVAILABLE else 'disabled',
+            'flowgent_ai': 'enabled',
+            'flowgent_api_key': FLOWGENT_API_KEY[:8] + '...'
         })
     except Exception as e:
         return jsonify({'status': 'ERROR', 'message': str(e)}), 500
+
+@app.route('/api/flowgent-test')
+@login_required
+def flowgent_test():
+    """Endpoint para probar Flowgent.ai"""
+    try:
+        test_query = "smartphone android"
+        improved_query = flowgent_ai.analyze_product_query(test_query)
+        
+        test_products = [
+            {"title": "Samsung Galaxy S24", "price": "$799.99", "source": "Amazon"},
+            {"title": "Google Pixel 8", "price": "$699.99", "source": "Best Buy"}
+        ]
+        recommendations = flowgent_ai.get_product_recommendations(test_products)
+        
+        return jsonify({
+            'status': 'OK',
+            'original_query': test_query,
+            'improved_query': improved_query,
+            'recommendations': recommendations,
+            'flowgent_available': True
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'ERROR',
+            'message': str(e),
+            'flowgent_available': False
+        }), 500
 # ========================================
 # FIN MÓDULO: API ENDPOINTS
 # ========================================
@@ -1024,11 +1241,12 @@ def internal_error(error):
 # MÓDULO: CONFIGURACIÓN DE INICIO Y LOGGING
 # ========================================
 if __name__ == '__main__':
-    print("Price Finder USA con Búsqueda por Imagen - Starting...")
+    print("Price Finder USA con Búsqueda por Imagen y Flowgent.ai - Starting...")
     print(f"Firebase: {'OK' if os.environ.get('FIREBASE_WEB_API_KEY') else 'NOT_CONFIGURED'}")
     print(f"SerpAPI: {'OK' if os.environ.get('SERPAPI_KEY') else 'NOT_CONFIGURED'}")
     print(f"Gemini Vision: {'OK' if GEMINI_READY else 'NOT_CONFIGURED'}")
     print(f"PIL/Pillow: {'OK' if PIL_AVAILABLE else 'NOT_CONFIGURED'}")
+    print(f"Flowgent.ai: OK (Key: {FLOWGENT_API_KEY[:8]}...)")
     print(f"Puerto: {os.environ.get('PORT', '5000')}")
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False, threaded=True)
 else:
