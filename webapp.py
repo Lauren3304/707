@@ -89,11 +89,11 @@ class FlowgentAssistant:
             "Content-Type": "application/json"
         }
         self.conversation_history = {}
-        print("✅ Asistente Flowgent.ai configurado correctamente")
+        print("✅ Asesor Experto Flowgent configurado correctamente")
     
     def get_system_prompt(self):
-        """Prompt del sistema para el asistente de Price Finder USA"""
-        return """Eres el Asistente de Price Finder USA, un experto en compras online en Estados Unidos. Tu objetivo es ayudar a los usuarios con:
+        """Prompt del sistema para el asesor de Price Finder USA"""
+        return """Eres un Asesor Experto de Price Finder USA, especialista en compras online en Estados Unidos. Tu objetivo es ayudar a los usuarios con:
 
 1. Recomendaciones de productos
 2. Información sobre tiendas (Amazon, Walmart, Target, Best Buy)
@@ -157,13 +157,13 @@ IMPORTANTE:
                     if len(self.conversation_history[user_id]) > 20:
                         self.conversation_history[user_id] = self.conversation_history[user_id][-10:]
                     
-                    print(f"🤖 Asistente respondió a: '{user_message[:50]}...'")
+                    print(f"💼 Asesor respondió a: '{user_message[:50]}...'")
                     return assistant_response
             
             return "Lo siento, no pude procesar tu consulta en este momento. Por favor intenta de nuevo."
             
         except Exception as e:
-            print(f"⚠️ Error en asistente: {e}")
+            print(f"⚠️ Error en asesor: {e}")
             return "Disculpa, estoy teniendo problemas técnicos. ¿Puedes intentar reformular tu pregunta?"
     
     def get_quick_responses(self):
@@ -184,7 +184,7 @@ IMPORTANTE:
         if user_id in self.conversation_history:
             del self.conversation_history[user_id]
 
-# Instancia global del asistente
+# Instancia global del asesor
 flowgent_assistant = FlowgentAssistant()
 # ========================================
 # FIN MÓDULO: CONFIGURACIÓN DE FLOWGENT AI
@@ -668,12 +668,12 @@ def render_page(title, content):
     </style>
 </head>
 <body>''' + content + '''
-    <!-- Asistente Flotante -->
-    <button class="assistant-toggle" id="assistantToggle">🤖</button>
+    <!-- Asesor Flotante -->
+    <button class="assistant-toggle" id="assistantToggle">💼</button>
     
     <div class="assistant-chat" id="assistantChat">
         <div class="assistant-header">
-            <div>Asistente de Price Finder USA</div>
+            <div>Asesor de Price Finder USA</div>
             <div style="font-size: 12px; opacity: 0.9;">Pregúntame sobre compras en USA</div>
         </div>
         
@@ -710,7 +710,7 @@ def render_page(title, content):
             const chat = document.getElementById('assistantChat');
             assistantOpen = !assistantOpen;
             chat.style.display = assistantOpen ? 'flex' : 'none';
-            this.textContent = assistantOpen ? '✕' : '🤖';
+            this.textContent = assistantOpen ? '✕' : '💼';
         });
         
         document.getElementById('assistantInput').addEventListener('keypress', function(e) {
@@ -818,7 +818,7 @@ AUTH_LOGIN_TEMPLATE = """
         <div class="form-header">
             <h1>Price Finder USA</h1>
             <p>Iniciar Sesion</p>
-            <div class="assistant-badge">🤖 Con Asistente IA Incluido</div>
+            <div class="assistant-badge">💼 Con Asesor Experto Incluido</div>
         </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -926,7 +926,7 @@ def search_page():
         {{% endwith %}}
         
         <h1>Buscar Productos</h1>
-        <p class="subtitle">{'Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto'} - Con asistente IA incluido 🤖</p>
+        <p class="subtitle">{'Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto'} - Resultados en 15 segundos</p>
         
         <form id="searchForm" enctype="multipart/form-data">
             <div class="search-bar">
@@ -940,13 +940,13 @@ def search_page():
         </form>
         
         <div class="tips">
-            <h4>Sistema optimizado{' + Asistente IA:' if image_search_available else ' con Asistente IA:'}</h4>
+            <h4>Sistema optimizado{' + Búsqueda por Imagen:' if image_search_available else ':'}</h4>
             <ul style="margin: 8px 0 0 15px; font-size: 13px;">
-                <li><strong>🤖 Asistente IA:</strong> Haz clic en el botón flotante para chatear</li>
+                <li><strong>💼 Asesor:</strong> Haz clic en el botón flotante para obtener ayuda</li>
                 <li><strong>Velocidad:</strong> Resultados en menos de 15 segundos</li>
                 <li><strong>USA:</strong> Amazon, Walmart, Target, Best Buy</li>
                 <li><strong>Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
-                {'<li><strong>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
+                {'<li><strong>🖼️ Visión:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
                 <li><strong>💬 Consultas:</strong> Pregunta sobre métodos de pago, envíos, etc.</li>
             </ul>
         </div>
@@ -1212,7 +1212,7 @@ def results_page():
             </div>
             
             <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}"</h1>
-            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Búsqueda completada - Asistente IA disponible 🤖</p>
+            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Búsqueda completada - Asesor disponible 💼</p>
             
             {stats}
             {products_html}
@@ -1242,7 +1242,7 @@ def health_check():
 @app.route('/api/assistant', methods=['POST'])
 @login_required
 def api_assistant():
-    """API del asistente conversacional"""
+    """API del asesor experto"""
     try:
         data = request.get_json()
         user_message = data.get('message', '').strip()
@@ -1254,9 +1254,9 @@ def api_assistant():
             return jsonify({'success': False, 'error': 'Mensaje demasiado largo'}), 400
         
         user_id = session.get('user_id', 'default')
-        print(f"🤖 Asistente - Usuario {user_id}: '{user_message[:50]}...'")
+        print(f"💼 Asesor - Usuario {user_id}: '{user_message[:50]}...'")
         
-        # Obtener respuesta del asistente
+        # Obtener respuesta del asesor
         response = flowgent_assistant.chat(user_message, user_id)
         
         return jsonify({
@@ -1265,16 +1265,16 @@ def api_assistant():
         })
         
     except Exception as e:
-        print(f"❌ Error en asistente: {e}")
+        print(f"❌ Error en asesor: {e}")
         return jsonify({
             'success': False, 
-            'error': 'Error interno del asistente'
+            'error': 'Error interno del asesor'
         }), 500
 
 @app.route('/api/assistant/clear', methods=['POST'])
 @login_required  
 def api_assistant_clear():
-    """Limpiar conversación del asistente"""
+    """Limpiar conversación del asesor"""
     try:
         user_id = session.get('user_id', 'default')
         flowgent_assistant.clear_conversation(user_id)
@@ -1285,7 +1285,7 @@ def api_assistant_clear():
 @app.route('/api/assistant/test')
 @login_required
 def assistant_test():
-    """Endpoint para probar el asistente"""
+    """Endpoint para probar el asesor"""
     try:
         test_message = "¿Cuáles son los métodos de pago aceptados?"
         response = flowgent_assistant.chat(test_message, "test_user")
@@ -1352,12 +1352,12 @@ def internal_error(error):
 # MÓDULO: CONFIGURACIÓN DE INICIO Y LOGGING
 # ========================================
 if __name__ == '__main__':
-    print("Price Finder USA con Búsqueda por Imagen y Asistente IA - Starting...")
+    print("Price Finder USA con Búsqueda por Imagen y Asesor Experto - Starting...")
     print(f"Firebase: {'OK' if os.environ.get('FIREBASE_WEB_API_KEY') else 'NOT_CONFIGURED'}")
     print(f"SerpAPI: {'OK' if os.environ.get('SERPAPI_KEY') else 'NOT_CONFIGURED'}")
     print(f"Gemini Vision: {'OK' if GEMINI_READY else 'NOT_CONFIGURED'}")
     print(f"PIL/Pillow: {'OK' if PIL_AVAILABLE else 'NOT_CONFIGURED'}")
-    print(f"Asistente Flowgent.ai: OK (Key: {FLOWGENT_API_KEY[:8]}...)")
+    print(f"Asesor Experto Flowgent: OK (Key: {FLOWGENT_API_KEY[:8]}...)")
     print(f"Puerto: {os.environ.get('PORT', '5000')}")
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False, threaded=True)
 else:
