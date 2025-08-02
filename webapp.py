@@ -74,13 +74,13 @@ else:
 # ========================================
 
 # ========================================
-# MÓDULO: CONFIGURACIÓN DE FLOWGENT AI
+# MÓDULO: CONFIGURACIÓN DE FLOWGENT AI - ASISTENTE CONVERSACIONAL
 # ========================================
-# Configuración de Flowgent.ai
+# Configuración de Flowgent.ai para asistente conversacional
 FLOWGENT_API_KEY = "37ef312f-8e4b-4947-8a57-4ddfb20e5947"
 FLOWGENT_BASE_URL = "https://api.flowgent.ai/v1"
 
-class FlowgentAI:
+class FlowgentAssistant:
     def __init__(self):
         self.api_key = FLOWGENT_API_KEY
         self.base_url = FLOWGENT_BASE_URL
@@ -88,55 +88,52 @@ class FlowgentAI:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        print("✅ Flowgent.ai configurado correctamente")
+        self.conversation_history = {}
+        print("✅ Asistente Flowgent.ai configurado correctamente")
     
-    def analyze_product_query(self, query, products=None):
-        """Analiza la consulta del usuario y mejora la búsqueda usando Flowgent.ai"""
+    def get_system_prompt(self):
+        """Prompt del sistema para el asistente de Price Finder USA"""
+        return """Eres el Asistente de Price Finder USA, un experto en compras online en Estados Unidos. Tu objetivo es ayudar a los usuarios con:
+
+1. Recomendaciones de productos
+2. Información sobre tiendas (Amazon, Walmart, Target, Best Buy)
+3. Consejos de compras
+4. Métodos de pago aceptados
+5. Políticas de devoluciones
+6. Envío internacional
+7. Comparación de precios
+8. Mejores ofertas y descuentos
+
+IMPORTANTE:
+- Responde SIEMPRE en español
+- Sé amigable, útil y profesional
+- Proporciona información específica sobre compras en USA
+- Si no sabes algo específico, sé honesto pero ofrece ayuda alternativa
+- Mantén respuestas concisas pero informativas
+- Sugiere usar la función de búsqueda cuando sea apropiado"""
+
+    def chat(self, user_message, user_id="default"):
+        """Conversación con el asistente"""
         try:
-            payload = {
-                "message": f"Analiza esta consulta de producto y mejora los términos de búsqueda: '{query}'. Responde solo con términos de búsqueda optimizados para e-commerce en inglés.",
-                "max_tokens": 100,
-                "temperature": 0.3
-            }
+            # Inicializar historial si no existe
+            if user_id not in self.conversation_history:
+                self.conversation_history[user_id] = []
             
-            response = requests.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json=payload,
-                timeout=10
-            )
+            # Construir contexto de conversación
+            messages = [{"role": "system", "content": self.get_system_prompt()}]
             
-            if response.status_code == 200:
-                result = response.json()
-                improved_query = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
-                if improved_query and len(improved_query) > 3:
-                    print(f"🤖 Flowgent mejoró consulta: '{query}' → '{improved_query}'")
-                    return improved_query
+            # Añadir historial reciente (últimos 6 mensajes)
+            recent_history = self.conversation_history[user_id][-6:]
+            for msg in recent_history:
+                messages.append(msg)
             
-            return query
-            
-        except Exception as e:
-            print(f"⚠️ Error en Flowgent.ai: {e}")
-            return query
-    
-    def get_product_recommendations(self, products):
-        """Obtiene recomendaciones inteligentes basadas en los productos encontrados"""
-        try:
-            if not products or len(products) == 0:
-                return None
-            
-            # Crear resumen de productos para el análisis
-            product_summary = []
-            for product in products[:3]:
-                product_summary.append({
-                    "title": product.get('title', ''),
-                    "price": product.get('price', ''),
-                    "source": product.get('source', '')
-                })
+            # Añadir mensaje actual
+            messages.append({"role": "user", "content": user_message})
             
             payload = {
-                "message": f"Basándote en estos productos encontrados: {json.dumps(product_summary)}, proporciona 3 recomendaciones breves de compra inteligente en español. Cada recomendación debe ser máximo 2 líneas.",
-                "max_tokens": 200,
+                "model": "gpt-3.5-turbo",
+                "messages": messages,
+                "max_tokens": 300,
                 "temperature": 0.7
             }
             
@@ -144,53 +141,51 @@ class FlowgentAI:
                 f"{self.base_url}/chat/completions",
                 headers=self.headers,
                 json=payload,
-                timeout=10
+                timeout=15
             )
             
             if response.status_code == 200:
                 result = response.json()
-                recommendations = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
-                if recommendations:
-                    print(f"💡 Flowgent generó recomendaciones")
-                    return recommendations
+                assistant_response = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
+                
+                if assistant_response:
+                    # Guardar en historial
+                    self.conversation_history[user_id].append({"role": "user", "content": user_message})
+                    self.conversation_history[user_id].append({"role": "assistant", "content": assistant_response})
+                    
+                    # Limpiar historial si es muy largo
+                    if len(self.conversation_history[user_id]) > 20:
+                        self.conversation_history[user_id] = self.conversation_history[user_id][-10:]
+                    
+                    print(f"🤖 Asistente respondió a: '{user_message[:50]}...'")
+                    return assistant_response
             
-            return None
+            return "Lo siento, no pude procesar tu consulta en este momento. Por favor intenta de nuevo."
             
         except Exception as e:
-            print(f"⚠️ Error obteniendo recomendaciones: {e}")
-            return None
+            print(f"⚠️ Error en asistente: {e}")
+            return "Disculpa, estoy teniendo problemas técnicos. ¿Puedes intentar reformular tu pregunta?"
     
-    def analyze_image_with_flowgent(self, image_description):
-        """Mejora la descripción de imagen para búsqueda de productos"""
-        try:
-            payload = {
-                "message": f"Convierte esta descripción de imagen en términos de búsqueda específicos para e-commerce: '{image_description}'. Responde solo con términos de búsqueda optimizados en inglés.",
-                "max_tokens": 80,
-                "temperature": 0.2
-            }
-            
-            response = requests.post(
-                f"{self.base_url}/chat/completions",
-                headers=self.headers,
-                json=payload,
-                timeout=8
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                improved_terms = result.get('choices', [{}])[0].get('message', {}).get('content', '').strip()
-                if improved_terms and len(improved_terms) > 3:
-                    print(f"🖼️🤖 Flowgent mejoró descripción de imagen")
-                    return improved_terms
-            
-            return image_description
-            
-        except Exception as e:
-            print(f"⚠️ Error analizando imagen con Flowgent: {e}")
-            return image_description
+    def get_quick_responses(self):
+        """Respuestas rápidas predefinidas"""
+        return [
+            "¿Cuáles son los métodos de pago aceptados?",
+            "¿Cómo puedo rastrear mi pedido?", 
+            "¿Cuál es la política de devoluciones?",
+            "¿Ofrecen envío internacional?",
+            "¿Qué tiendas recomiendan para electrónicos?",
+            "¿Hay descuentos disponibles?",
+            "¿Cómo comparar precios efectivamente?",
+            "¿Cuáles son las mejores épocas para comprar?"
+        ]
+    
+    def clear_conversation(self, user_id="default"):
+        """Limpiar historial de conversación"""
+        if user_id in self.conversation_history:
+            del self.conversation_history[user_id]
 
-# Instancia global de FlowgentAI
-flowgent_ai = FlowgentAI()
+# Instancia global del asistente
+flowgent_assistant = FlowgentAssistant()
 # ========================================
 # FIN MÓDULO: CONFIGURACIÓN DE FLOWGENT AI
 # ========================================
@@ -343,10 +338,7 @@ def analyze_image_with_gemini(image_content):
         if response.text:
             search_query = response.text.strip()
             print(f"🧠 Consulta generada desde imagen: '{search_query}'")
-            
-            # Mejorar con Flowgent.ai
-            improved_query = flowgent_ai.analyze_image_with_flowgent(search_query)
-            return improved_query
+            return search_query
         
         return None
             
@@ -373,9 +365,9 @@ def validate_image(image_content):
 # ========================================
 
 # ========================================
-# MÓDULO: CLASE PRICE FINDER - MODIFICADO CON FLOWGENT.AI
+# MÓDULO: CLASE PRICE FINDER
 # ========================================
-# Price Finder Class - MODIFICADO para búsqueda por imagen y Flowgent.ai
+# Price Finder Class - Original sin modificaciones de IA
 class PriceFinder:
     def __init__(self):
         # Intentar multiples nombres de variables de entorno comunes
@@ -494,6 +486,123 @@ class PriceFinder:
                     'link': self._get_valid_link(item),
                     'rating': str(item.get('rating', '')),
                     'reviews': str(item.get('reviews', '')),
+                    'image': ''
+                })
+                if len(products) >= 3:
+                    break
+            except Exception as e:
+                print(f"Error procesando item: {e}")
+                continue
+        return products
+    
+    def search_products(self, query=None, image_content=None):
+        """Búsqueda mejorada con soporte para imagen"""
+        # Determinar consulta final
+        final_query = None
+        search_source = "text"
+        
+        if image_content and GEMINI_READY and PIL_AVAILABLE:
+            if validate_image(image_content):
+                if query:
+                    # Texto + imagen
+                    image_query = analyze_image_with_gemini(image_content)
+                    if image_query:
+                        final_query = f"{query} {image_query}"
+                        search_source = "combined"
+                        print(f"🔗 Búsqueda combinada: texto + imagen")
+                    else:
+                        final_query = query
+                        search_source = "text_fallback"
+                        print(f"📝 Imagen falló, usando solo texto")
+                else:
+                    # Solo imagen
+                    final_query = analyze_image_with_gemini(image_content)
+                    search_source = "image"
+                    print(f"🖼️ Búsqueda basada en imagen")
+            else:
+                print("❌ Imagen inválida")
+                final_query = query or "producto"
+                search_source = "text"
+        else:
+            # Solo texto o imagen no disponible
+            final_query = query or "producto"
+            search_source = "text"
+            if image_content and not GEMINI_READY:
+                print("⚠️ Imagen proporcionada pero Gemini no está configurado")
+        
+        if not final_query or len(final_query.strip()) < 2:
+            return self._get_examples("producto")
+        
+        final_query = final_query.strip()
+        print(f"📝 Búsqueda final: '{final_query}' (fuente: {search_source})")
+        
+        # Continuar con lógica de búsqueda existente
+        if not self.api_key:
+            print("Sin API key - usando ejemplos")
+            return self._get_examples(final_query)
+        
+        cache_key = f"search_{hash(final_query.lower())}"
+        if cache_key in self.cache:
+            cache_data, timestamp = self.cache[cache_key]
+            if (time.time() - timestamp) < self.cache_ttl:
+                return cache_data
+        
+        start_time = time.time()
+        all_products = []
+        
+        if time.time() - start_time < 8:
+            query_optimized = f'"{final_query}" buy online'
+            data = self._make_api_request('google_shopping', query_optimized)
+            products = self._process_results(data, 'google_shopping')
+            all_products.extend(products)
+        
+        if not all_products:
+            all_products = self._get_examples(final_query)
+        
+        all_products.sort(key=lambda x: x['price_numeric'])
+        final_products = all_products[:6]
+        
+        # Añadir metadata
+        for product in final_products:
+            product['search_source'] = search_source
+            product['original_query'] = query if query else "imagen"
+        
+        self.cache[cache_key] = (final_products, time.time())
+        if len(self.cache) > 10:
+            oldest_key = min(self.cache.keys(), key=lambda k: self.cache[k][1])
+            del self.cache[oldest_key]
+        
+        return final_products
+    
+    def _get_examples(self, query):
+        stores = ['Amazon', 'Walmart', 'Target']
+        examples = []
+        for i in range(3):
+            price = self._generate_realistic_price(query, i)
+            store = stores[i]
+            search_query = quote_plus(str(query)[:30])
+            if store == 'Amazon':
+                link = f"https://www.amazon.com/s?k={search_query}"
+            elif store == 'Walmart':
+                link = f"https://www.walmart.com/search?q={search_query}"
+            else:
+                link = f"https://www.target.com/s?searchTerm={search_query}"
+            
+            examples.append({
+                'title': f'{self._clean_text(query)} - {["Mejor Precio", "Oferta", "Popular"][i]}',
+                'price': f'${price:.2f}',
+                'price_numeric': price,
+                'source': store,
+                'link': link,
+                'rating': ['4.5', '4.2', '4.0'][i],
+                'reviews': ['500', '300', '200'][i],
+                'image': '',
+                'search_source': 'example'
+            })
+        return examples
+
+# Instancia global de PriceFinder
+price_finder = PriceFinder()': str(item.get('reviews', '')),
                     'image': ''
                 })
                 if len(products) >= 3:
@@ -632,7 +741,11 @@ price_finder = PriceFinder()
 # ========================================
 
 # ========================================
-# MÓDULO: TEMPLATES HTML
+# FIN MÓDULO: CLASE PRICE FINDER
+# ========================================
+
+# ========================================
+# MÓDULO: TEMPLATES HTML - ACTUALIZADO CON ASISTENTE
 # ========================================
 # Templates
 def render_page(title, content):
@@ -674,14 +787,143 @@ def render_page(title, content):
         .or-divider { text-align: center; margin: 20px 0; color: #666; font-weight: 600; position: relative; }
         .or-divider:before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #dee2e6; z-index: 1; }
         .or-divider span { background: white; padding: 0 15px; position: relative; z-index: 2; }
-        .flowgent-badge { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold; display: inline-block; margin-left: 8px; }
-        .recommendations { background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin: 15px 0; }
-        .recommendations h4 { color: #2e7d32; margin-bottom: 8px; display: flex; align-items: center; }
-        .recommendations ul { margin: 8px 0 0 15px; font-size: 13px; }
-        .recommendations li { margin-bottom: 5px; }
+        .assistant-toggle { position: fixed; bottom: 20px; right: 20px; background: #4CAF50; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; font-size: 24px; transition: all 0.3s ease; }
+        .assistant-toggle:hover { background: #45a049; transform: scale(1.1); }
+        .assistant-chat { position: fixed; bottom: 90px; right: 20px; width: 350px; height: 500px; background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); z-index: 999; display: none; flex-direction: column; }
+        .assistant-header { background: linear-gradient(45deg, #4CAF50, #45a049); color: white; padding: 15px; border-radius: 15px 15px 0 0; text-align: center; font-weight: 600; }
+        .assistant-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .assistant-input { display: flex; padding: 10px; border-top: 1px solid #eee; }
+        .assistant-input input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; margin-right: 10px; }
+        .assistant-input button { background: #4CAF50; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; word-wrap: break-word; }
+        .message.user { background: #e3f2fd; color: #1976d2; align-self: flex-end; }
+        .message.assistant { background: #f1f8e9; color: #388e3c; align-self: flex-start; }
+        .quick-replies { display: flex; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
+        .quick-reply { background: #e8f5e8; color: #4caf50; border: 1px solid #4caf50; padding: 5px 10px; border-radius: 15px; font-size: 12px; cursor: pointer; transition: all 0.3s ease; }
+        .quick-reply:hover { background: #4caf50; color: white; }
+        .typing { display: none; align-self: flex-start; padding: 10px 15px; background: #f5f5f5; border-radius: 15px; }
+        .typing-dots { display: flex; gap: 3px; }
+        .typing-dot { width: 8px; height: 8px; border-radius: 50%; background: #999; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-10px); } }
     </style>
 </head>
-<body>''' + content + '''</body>
+<body>''' + content + '''
+    <!-- Asistente Flotante -->
+    <button class="assistant-toggle" id="assistantToggle">🤖</button>
+    
+    <div class="assistant-chat" id="assistantChat">
+        <div class="assistant-header">
+            <div>Asistente de Price Finder USA</div>
+            <div style="font-size: 12px; opacity: 0.9;">Pregúntame sobre compras en USA</div>
+        </div>
+        
+        <div class="assistant-messages" id="assistantMessages">
+            <div class="message assistant">
+                ¡Hola! ¿Cómo puedo ayudarte hoy? Puedo responder sobre:
+                <div class="quick-replies" id="quickReplies">
+                    <div class="quick-reply" onclick="sendQuickReply('¿Cuáles son los métodos de pago aceptados?')">Métodos de pago</div>
+                    <div class="quick-reply" onclick="sendQuickReply('¿Cómo puedo rastrear mi pedido?')">Rastrear pedido</div>
+                    <div class="quick-reply" onclick="sendQuickReply('¿Ofrecen envío internacional?')">Envío internacional</div>
+                    <div class="quick-reply" onclick="sendQuickReply('¿Cuál es la política de devoluciones?')">Devoluciones</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="typing" id="typingIndicator">
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+        
+        <div class="assistant-input">
+            <input type="text" id="assistantInput" placeholder="Escribe tu pregunta...">
+            <button onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        let assistantOpen = false;
+        
+        document.getElementById('assistantToggle').addEventListener('click', function() {
+            const chat = document.getElementById('assistantChat');
+            assistantOpen = !assistantOpen;
+            chat.style.display = assistantOpen ? 'flex' : 'none';
+            this.textContent = assistantOpen ? '✕' : '🤖';
+        });
+        
+        document.getElementById('assistantInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        function sendQuickReply(message) {
+            document.getElementById('assistantInput').value = message;
+            sendMessage();
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('assistantInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Añadir mensaje del usuario
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Mostrar indicador de escritura
+            showTyping();
+            
+            // Enviar a la API
+            fetch('/api/assistant', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideTyping();
+                if (data.success) {
+                    addMessage(data.response, 'assistant');
+                } else {
+                    addMessage('Lo siento, hubo un error. ¿Puedes intentar de nuevo?', 'assistant');
+                }
+            })
+            .catch(error => {
+                hideTyping();
+                addMessage('Error de conexión. Intenta de nuevo.', 'assistant');
+            });
+        }
+        
+        function addMessage(text, sender) {
+            const messages = document.getElementById('assistantMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            const messages = document.getElementById('assistantMessages');
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+    </script>
+</body>
 </html>'''
     return template
 
@@ -698,7 +940,7 @@ AUTH_LOGIN_TEMPLATE = """
         .form-header { text-align: center; padding: 30px 25px 15px; background: linear-gradient(45deg, #2C3E50, #4A90E2); color: white; }
         .form-header h1 { font-size: 1.8em; margin-bottom: 8px; }
         .form-header p { opacity: 0.9; font-size: 1em; }
-        .flowgent-badge { background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 12px; font-size: 10px; margin-top: 8px; display: inline-block; }
+        .assistant-badge { background: rgba(76,175,80,0.3); padding: 4px 8px; border-radius: 12px; font-size: 10px; margin-top: 8px; display: inline-block; }
         .form-body { padding: 25px; }
         form { display: flex; flex-direction: column; gap: 18px; }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
@@ -719,7 +961,7 @@ AUTH_LOGIN_TEMPLATE = """
         <div class="form-header">
             <h1>Price Finder USA</h1>
             <p>Iniciar Sesion</p>
-            <div class="flowgent-badge">🤖 Potenciado por Flowgent.ai</div>
+            <div class="assistant-badge">🤖 Con Asistente IA Incluido</div>
         </div>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -827,8 +1069,8 @@ def search_page():
             {{% endif %}}
         {{% endwith %}}
         
-        <h1>Buscar Productos<span class="flowgent-badge">🤖 IA</span></h1>
-        <p class="subtitle">{'Búsqueda inteligente por texto o imagen' if image_search_available else 'Búsqueda inteligente por texto'} - Optimizado con Flowgent.ai</p>
+        <h1>Buscar Productos</h1>
+        <p class="subtitle">{'Búsqueda por texto o imagen' if image_search_available else 'Búsqueda por texto'} - Con asistente IA incluido 🤖</p>
         
         <form id="searchForm" enctype="multipart/form-data">
             <div class="search-bar">
@@ -842,13 +1084,16 @@ def search_page():
         </form>
         
         <div class="tips">
-            <h4>Sistema optimizado con IA{' + Búsqueda por Imagen:' if image_search_available else ':'}</h4>
+            <h4>Sistema optimizado{' + Asistente IA:' if image_search_available else ' con Asistente IA:'}</h4>
             <ul style="margin: 8px 0 0 15px; font-size: 13px;">
-                <li><strong>🤖 Flowgent.ai:</strong> Optimiza automáticamente tus búsquedas</li>
+                <li><strong>🤖 Asistente IA:</strong> Haz clic en el botón flotante para chatear</li>
                 <li><strong>Velocidad:</strong> Resultados en menos de 15 segundos</li>
                 <li><strong>USA:</strong> Amazon, Walmart, Target, Best Buy</li>
                 <li><strong>Filtrado:</strong> Sin Alibaba, Temu, AliExpress</li>
                 {'<li><strong>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
+                <li><strong>💬 Consultas:</strong> Pregunta sobre métodos de pago, envíos, etc.</li>
+            </ul>
+        </div>🖼️ Visión IA:</strong> Identifica productos en imágenes</li>' if image_search_available else '<li><strong>⚠️ Imagen:</strong> Configura GEMINI_API_KEY para activar</li>'}
                 <li><strong>💡 Recomendaciones:</strong> Consejos inteligentes de compra</li>
             </ul>
         </div>
@@ -964,7 +1209,7 @@ def search_page():
         }}
     </script>'''
     
-    return render_template_string(render_page('Busqueda Inteligente', content))
+    return render_template_string(render_page('Busqueda', content))
 # ========================================
 # FIN MÓDULO: RUTAS PRINCIPALES
 # ========================================
@@ -1004,10 +1249,10 @@ def api_search():
             query = query[:80]
         
         user_email = session.get('user_email', 'Unknown')
-        search_type = "imagen+IA" if image_content and not query else "texto+imagen+IA" if image_content and query else "texto+IA"
-        print(f"🤖 Search request from {user_email}: {search_type}")
+        search_type = "imagen" if image_content and not query else "texto+imagen" if image_content and query else "texto"
+        print(f"Search request from {user_email}: {search_type}")
         
-        # Realizar búsqueda con soporte para imagen y Flowgent.ai
+        # Realizar búsqueda con soporte para imagen
         products = price_finder.search_products(query=query, image_content=image_content)
         
         session['last_search'] = {
@@ -1018,7 +1263,7 @@ def api_search():
             'search_type': search_type
         }
         
-        print(f"🤖 Search completed for {user_email}: {len(products)} products found with AI optimization")
+        print(f"Search completed for {user_email}: {len(products)} products found")
         return jsonify({'success': True, 'products': products, 'total': len(products)})
         
     except Exception as e:
@@ -1048,11 +1293,6 @@ def results_page():
         query = html.escape(str(search_data.get('query', 'busqueda')))
         search_type = search_data.get('search_type', 'texto')
         
-        # Extraer recomendaciones de Flowgent.ai si existen
-        flowgent_recommendations = None
-        if products and products[0].get('flowgent_recommendations'):
-            flowgent_recommendations = products[0]['flowgent_recommendations']
-        
         products_html = ""
         badges = ['MEJOR', '2do', '3ro']
         colors = ['#4caf50', '#ff9800', '#9c27b0']
@@ -1063,15 +1303,13 @@ def results_page():
             
             badge = f'<div style="position: absolute; top: 8px; right: 8px; background: {colors[min(i, 2)]}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">{badges[min(i, 2)]}</div>' if i < 3 else ''
             
-            # Badge de fuente de búsqueda mejorado
+            # Badge de fuente de búsqueda
             search_source_badge = ''
             source = product.get('search_source', '')
             if source == 'image':
-                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #673ab7; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">📷🤖 IMAGEN+IA</div>'
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #673ab7; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">📷 IMAGEN</div>'
             elif source == 'combined':
-                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #607d8b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🔗🤖 MIXTO+IA</div>'
-            elif source == 'text':
-                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #795548; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🤖 TEXTO+IA</div>'
+                search_source_badge = '<div style="position: absolute; top: 8px; left: 8px; background: #607d8b; color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: bold;">🔗 MIXTO</div>'
             
             title = html.escape(str(product.get('title', 'Producto')))
             price = html.escape(str(product.get('price', '$0.00')))
@@ -1097,29 +1335,17 @@ def results_page():
             avg_price = sum(prices) / len(prices)
             search_type_text = {
                 "texto": "texto", 
-                "imagen": "imagen IA", 
-                "texto+imagen": "texto + imagen IA", 
-                "combined": "búsqueda mixta",
-                "texto+IA": "texto optimizado con IA",
-                "imagen+IA": "imagen analizada con IA",
-                "texto+imagen+IA": "texto + imagen optimizado con IA"
+                "imagen": "imagen", 
+                "texto+imagen": "texto + imagen", 
+                "combined": "búsqueda mixta"
             }.get(search_type, search_type)
             
             stats = f'''
                 <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text}) <span class="flowgent-badge">🤖 IA</span></h3>
+                    <h3 style="color: #2e7d32; margin-bottom: 8px;">Resultados de búsqueda ({search_type_text})</h3>
                     <p><strong>{len(products)} productos encontrados</strong></p>
                     <p><strong>Mejor precio: ${min_price:.2f}</strong></p>
                     <p><strong>Precio promedio: ${avg_price:.2f}</strong></p>
-                </div>'''
-        
-        # Añadir recomendaciones de Flowgent.ai si existen
-        recommendations_html = ""
-        if flowgent_recommendations:
-            recommendations_html = f'''
-                <div class="recommendations">
-                    <h4>💡 Recomendaciones Inteligentes <span class="flowgent-badge">🤖 Flowgent.ai</span></h4>
-                    <div style="white-space: pre-line; font-size: 14px; line-height: 1.5;">{html.escape(flowgent_recommendations)}</div>
                 </div>'''
         
         content = f'''
@@ -1132,15 +1358,14 @@ def results_page():
                 </div>
             </div>
             
-            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}" <span class="flowgent-badge">🤖 IA</span></h1>
-            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Búsqueda optimizada con inteligencia artificial</p>
+            <h1 style="color: white; text-align: center; margin-bottom: 8px;">Resultados: "{query}"</h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.9); margin-bottom: 25px;">Búsqueda completada - Asistente IA disponible 🤖</p>
             
             {stats}
-            {recommendations_html}
             {products_html}
         </div>'''
         
-        return render_template_string(render_page('Resultados IA - Price Finder USA', content))
+        return render_template_string(render_page('Resultados - Price Finder USA', content))
     except Exception as e:
         print(f"Results page error: {e}")
         flash('Error al mostrar resultados.', 'danger')
@@ -1156,38 +1381,73 @@ def health_check():
             'serpapi': 'enabled' if price_finder.is_api_configured() else 'disabled',
             'gemini_vision': 'enabled' if GEMINI_READY else 'disabled',
             'pil_available': 'enabled' if PIL_AVAILABLE else 'disabled',
-            'flowgent_ai': 'enabled',
-            'flowgent_api_key': FLOWGENT_API_KEY[:8] + '...'
+            'assistant': 'enabled'
         })
     except Exception as e:
         return jsonify({'status': 'ERROR', 'message': str(e)}), 500
 
-@app.route('/api/flowgent-test')
+@app.route('/api/assistant', methods=['POST'])
 @login_required
-def flowgent_test():
-    """Endpoint para probar Flowgent.ai"""
+def api_assistant():
+    """API del asistente conversacional"""
     try:
-        test_query = "smartphone android"
-        improved_query = flowgent_ai.analyze_product_query(test_query)
+        data = request.get_json()
+        user_message = data.get('message', '').strip()
         
-        test_products = [
-            {"title": "Samsung Galaxy S24", "price": "$799.99", "source": "Amazon"},
-            {"title": "Google Pixel 8", "price": "$699.99", "source": "Best Buy"}
-        ]
-        recommendations = flowgent_ai.get_product_recommendations(test_products)
+        if not user_message:
+            return jsonify({'success': False, 'error': 'Mensaje vacío'}), 400
+        
+        if len(user_message) > 500:
+            return jsonify({'success': False, 'error': 'Mensaje demasiado largo'}), 400
+        
+        user_id = session.get('user_id', 'default')
+        print(f"🤖 Asistente - Usuario {user_id}: '{user_message[:50]}...'")
+        
+        # Obtener respuesta del asistente
+        response = flowgent_assistant.chat(user_message, user_id)
+        
+        return jsonify({
+            'success': True,
+            'response': response
+        })
+        
+    except Exception as e:
+        print(f"❌ Error en asistente: {e}")
+        return jsonify({
+            'success': False, 
+            'error': 'Error interno del asistente'
+        }), 500
+
+@app.route('/api/assistant/clear', methods=['POST'])
+@login_required  
+def api_assistant_clear():
+    """Limpiar conversación del asistente"""
+    try:
+        user_id = session.get('user_id', 'default')
+        flowgent_assistant.clear_conversation(user_id)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/assistant/test')
+@login_required
+def assistant_test():
+    """Endpoint para probar el asistente"""
+    try:
+        test_message = "¿Cuáles son los métodos de pago aceptados?"
+        response = flowgent_assistant.chat(test_message, "test_user")
         
         return jsonify({
             'status': 'OK',
-            'original_query': test_query,
-            'improved_query': improved_query,
-            'recommendations': recommendations,
-            'flowgent_available': True
+            'test_message': test_message,
+            'response': response,
+            'assistant_available': True
         })
     except Exception as e:
         return jsonify({
             'status': 'ERROR',
             'message': str(e),
-            'flowgent_available': False
+            'assistant_available': False
         }), 500
 # ========================================
 # FIN MÓDULO: API ENDPOINTS
@@ -1241,12 +1501,12 @@ def internal_error(error):
 # MÓDULO: CONFIGURACIÓN DE INICIO Y LOGGING
 # ========================================
 if __name__ == '__main__':
-    print("Price Finder USA con Búsqueda por Imagen y Flowgent.ai - Starting...")
+    print("Price Finder USA con Búsqueda por Imagen y Asistente IA - Starting...")
     print(f"Firebase: {'OK' if os.environ.get('FIREBASE_WEB_API_KEY') else 'NOT_CONFIGURED'}")
     print(f"SerpAPI: {'OK' if os.environ.get('SERPAPI_KEY') else 'NOT_CONFIGURED'}")
     print(f"Gemini Vision: {'OK' if GEMINI_READY else 'NOT_CONFIGURED'}")
     print(f"PIL/Pillow: {'OK' if PIL_AVAILABLE else 'NOT_CONFIGURED'}")
-    print(f"Flowgent.ai: OK (Key: {FLOWGENT_API_KEY[:8]}...)")
+    print(f"Asistente Flowgent.ai: OK (Key: {FLOWGENT_API_KEY[:8]}...)")
     print(f"Puerto: {os.environ.get('PORT', '5000')}")
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False, threaded=True)
 else:
